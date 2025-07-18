@@ -87,8 +87,8 @@ public class UserEntity extends BaseEntity {
     }
 
     public void charge(Long amount){
-        if(amount < 0){
-            throw new CoreException(ErrorType.BAD_REQUEST,"충전 금액은 0 이상이어야 합니다.");
+        if(amount <= 0){
+            throw new CoreException(ErrorType.BAD_REQUEST,"충전 금액은 0 보다 커야 합니다.");
         }
         this.point += amount;
     }
