@@ -21,6 +21,7 @@ class UserUnitTest {
         @ParameterizedTest
         @ValueSource(strings = {
                 "login_id",
+                "",
                 "userIduserId",
                 "userId12345",
                 "12345678987654321"
@@ -48,6 +49,7 @@ class UserUnitTest {
         @ValueSource(strings = {
                 "user@emmail.com.com",
                 "user@user@emmail.com.com",
+                "",
                 "emailemailemail",
                 "user@emmail@com",
                 "user.emmail.com"
@@ -74,6 +76,7 @@ class UserUnitTest {
         @ParameterizedTest
         @ValueSource(strings = {
                 "07-07-2025",
+                "",
                 "07-07-25",
                 "07.07.2025"
         })
