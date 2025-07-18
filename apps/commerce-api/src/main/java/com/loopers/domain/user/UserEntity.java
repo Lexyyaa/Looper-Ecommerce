@@ -71,9 +71,25 @@ public class UserEntity extends BaseEntity {
         this.point = 0L;
     }
 
+    public UserEntity(String loginId, Gender gender, String name, String birth, String email, Long point) {
+        this.loginId = loginId;
+        this.gender = gender;
+        this.name = name;
+        this.birth = birth;
+        this.email = email;
+        this.point = point;
+    }
+
     public static void validateUniqueLoginId(boolean exists) {
         if(exists){
             throw new CoreException(ErrorType.BAD_REQUEST,"이미 존재하는 ID 입니다.");
         }
+    }
+
+    public void charge(Long amount){
+        if(amount < 0){
+            throw new CoreException(ErrorType.BAD_REQUEST,"충전 금액은 0 이상이어야 합니다.");
+        }
+        this.point += amount;
     }
 }

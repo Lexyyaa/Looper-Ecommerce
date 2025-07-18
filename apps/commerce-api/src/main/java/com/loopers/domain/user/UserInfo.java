@@ -21,4 +21,20 @@ public class UserInfo {
             );
         }
     }
+
+    public record Point(
+            Long id,
+            String loginId,
+            String name,
+            Long point
+    ){
+        public static Point from (UserEntity model){
+            return new Point(
+                    model.getId(),
+                    model.getLoginId(),
+                    model.getName(),
+                    model.getPoint()
+            );
+        }
+    }
 }

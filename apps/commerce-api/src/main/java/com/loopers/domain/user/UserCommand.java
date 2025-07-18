@@ -22,6 +22,12 @@ public class UserCommand {
             );
         }
     }
+    @Builder
+    public record Charge(
+            String loginId,
+            Long amount
+    ){
+    }
 }
 
 
