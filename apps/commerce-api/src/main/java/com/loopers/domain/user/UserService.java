@@ -36,6 +36,12 @@ public class UserService {
 
         return UserInfo.Point.from(point);
     }
+
+    @Transactional(readOnly = true)
+    public UserInfo.Point myPoint(String loginId){
+        UserEntity user = userRepository.findByLoginId(loginId).orElse(null);
+        return user == null ? null : UserInfo.Point.from(user);
+    }
 }
 
 

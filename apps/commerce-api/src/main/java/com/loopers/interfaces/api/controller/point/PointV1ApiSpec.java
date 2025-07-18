@@ -19,4 +19,13 @@ public interface PointV1ApiSpec {
             @Schema(name = "충전금액", description = "충전금액")
             PointV1Request.Charge request
     );
+
+    @Operation(
+            summary = "포인트조회",
+            description = "사용자의 현재 보유 포인트를 조회한다."
+    )
+    ApiResponse<PointV1Response> myPoint(
+            @Schema(name = "예시 ID", description = "조회할 예시의 ID")
+            @RequestHeader("X-User-Id") String userId
+    );
 }

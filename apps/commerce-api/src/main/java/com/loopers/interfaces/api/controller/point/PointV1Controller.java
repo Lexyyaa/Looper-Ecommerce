@@ -24,4 +24,11 @@ public class PointV1Controller implements PointV1ApiSpec {
         PointV1Response response = PointV1Response.from(pointFacade.charge(command));
         return ApiResponse.success(response);
     }
+
+    @GetMapping("")
+    @Override
+    public ApiResponse<PointV1Response> myPoint(@RequestHeader("X-USER-ID") String loginId) {
+        PointV1Response response = PointV1Response.from(pointFacade.myPoint(loginId));
+        return ApiResponse.success(response);
+    }
 }
