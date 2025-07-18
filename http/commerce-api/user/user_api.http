@@ -1,0 +1,17 @@
+### 회원가입
+POST http://localhost:8080/api/v1/users
+Content-Type: application/json
+
+{
+  "loginId": "user111",
+  "gender": "M",
+  "name": "사용자1",
+  "birth": "2020-01-01",
+  "email": "user111@test.com"
+}
+
+### 내 프로필
+GET http://localhost:8080/api/v1/users/me
+X-USER-ID: user111
+
+
