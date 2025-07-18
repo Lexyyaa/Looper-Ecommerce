@@ -33,6 +33,9 @@ public class UserEntity extends BaseEntity {
     @Column(name = "email", nullable = false)
     private String  email;
 
+    @Column(name = "point", nullable = true)
+    private Long  point;
+
     public enum Gender {
         M, F
     }
@@ -65,6 +68,7 @@ public class UserEntity extends BaseEntity {
         this.name = name;
         this.birth = birth;
         this.email = email;
+        this.point = 0L;
     }
 
     public static void validateUniqueLoginId(boolean exists) {
