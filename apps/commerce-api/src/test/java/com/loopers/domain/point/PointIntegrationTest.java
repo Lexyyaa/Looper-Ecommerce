@@ -85,4 +85,47 @@ class PointIntegrationTest {
             verifyNoMoreInteractions(userRepository);
         }
     }
+
+    @DisplayName("[포인트 조회] ")
+    @Nested
+    class MyPoint {
+
+        @DisplayName("[포인트 조회 성공] 회원이 존재하면 보유 포인트를 반환한다.")
+        @Test
+        void success_myPoint_whenUserExists() {
+            // arrange
+            UserEntity user = new UserEntity(
+                    "loginId123",
+                    UserEntity.Gender.M,
+                    "사용자1",
+                    "2025-07-07",
+                    "loginId123@user.com",
+                    1500L
+            );
+            userRepository.save(user);
+
+            UserCommand.Charge command = new UserCommand.Charge("loginId123",500L);
+            userService.charge(command);
+
+            // act
+            UserInfo.Point info = userService.myPoint(user.getLoginId());
+
+            // assert
+            assertThat(info).isNotNull();
+            assertThat(info.loginId()).isEqualTo("loginId123");
+            assertThat(info.name()).isEqualTo("사용자1");
+            assertThat(info.point()).isEqualTo(user.getPoint()+command.amount());
+        }
+
+        @DisplayName("[포인트 조회 실패] 회원이 존재하지 않으면 null을 반환한다.")
+        @Test
+        void failure_myPoint_whenUserDoesNotExist() {
+            // arrange
+            String loginId = "loginId111";
+            // act
+            UserInfo.Point info = userService.myPoint(loginId);
+            // assert
+            assertThat(info).isNull();
+        }
+    }
 }

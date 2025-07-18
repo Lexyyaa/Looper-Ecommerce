@@ -74,8 +74,7 @@ public class PointV1ApiE2ETest {
 
             // act
             ParameterizedTypeReference<ApiResponse<PointV1Response>> responseType =
-                    new ParameterizedTypeReference<>() {
-                    };
+                    new ParameterizedTypeReference<>() {};
             ResponseEntity<ApiResponse<PointV1Response>> response =
                     testRestTemplate.exchange(
                             END_POINT,
@@ -112,8 +111,7 @@ public class PointV1ApiE2ETest {
 
             // act
             ParameterizedTypeReference<ApiResponse<PointV1Response>> responseType =
-                    new ParameterizedTypeReference<>() {
-                    };
+                    new ParameterizedTypeReference<>() {};
             ResponseEntity<ApiResponse<PointV1Response>> response =
                     testRestTemplate.exchange(
                             END_POINT,
@@ -124,6 +122,104 @@ public class PointV1ApiE2ETest {
 
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 
+        }
+    }
+
+    @DisplayName("[포인트 조회] ")
+    @Nested
+    class MyPoint {
+
+        private final String END_POINT = "/api/v1/points";
+
+        @DisplayName("존재하는 유저가 조회하면 보유 포인트를 반환한다.")
+        @Test
+        void success_myPoint_whenUserExists() {
+            // arrange
+            String loginId = "user111";
+            UserEntity user = new UserEntity(
+                    loginId,
+                    UserEntity.Gender.M,
+                    "사용자1",
+                    "2025-07-07",
+                    "loginId123@user.com",
+                    1000L
+            );
+            userJpaRepository.save(user);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-USER-ID", loginId);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+            // act
+            ParameterizedTypeReference<ApiResponse<PointV1Response>> responseType =
+                    new ParameterizedTypeReference<>() {};
+            ResponseEntity<ApiResponse<PointV1Response>> response =
+                    testRestTemplate.exchange(
+                            END_POINT,
+                            HttpMethod.GET,
+                            entity,
+                            responseType
+                    );
+
+            // assert
+            assertAll(
+                    () -> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK),
+                    () -> assertThat(response.getBody()).isNotNull(),
+                    () -> assertThat(response.getBody().data().loginId()).isEqualTo(loginId),
+                    () -> assertThat(response.getBody().data().name()).isEqualTo(user.getName()),
+                    () -> assertThat(response.getBody().data().point()).isEqualTo(user.getPoint())
+            );
+        }
+
+        @DisplayName("`X-USER-ID` 헤더가 없으면 400 Bad Request를 반환한다.")
+        @Test
+        void failure_myPoint_whenUserIdHeaderIsMissing() {
+            // arrange
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+            // act
+            ParameterizedTypeReference<ApiResponse<PointV1Response>> responseType =
+                    new ParameterizedTypeReference<>() {};
+            ResponseEntity<ApiResponse<PointV1Response>> response =
+                    testRestTemplate.exchange(
+                            END_POINT,
+                            HttpMethod.GET,
+                            entity,
+                            responseType
+                    );
+
+            // assert
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        }
+
+        @DisplayName("존재하지 않는 유저가 조회하면 404 Not Found를 반환한다.")
+        @Test
+        void failure_myPoint_whenUserDoesNotExist() {
+            // arrange
+            String loginId = "user123";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-USER-ID", loginId);
+
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+            // act
+            ParameterizedTypeReference<ApiResponse<PointV1Response>> responseType =
+                    new ParameterizedTypeReference<>() {};
+            ResponseEntity<ApiResponse<PointV1Response>> response =
+                    testRestTemplate.exchange(
+                            END_POINT,
+                            HttpMethod.GET,
+                            entity,
+                            responseType
+                    );
+
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         }
     }
 }
