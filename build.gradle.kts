@@ -57,6 +57,7 @@ subprojects {
         annotationProcessor("org.projectlombok:lombok")
         // Test
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+        testAnnotationProcessor("org.projectlombok:lombok")
         // testcontainers:mysql 이 jdbc 사용함
         testRuntimeOnly("com.mysql:mysql-connector-j")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
