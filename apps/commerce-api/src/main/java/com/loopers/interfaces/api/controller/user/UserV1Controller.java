@@ -22,4 +22,11 @@ public class UserV1Controller implements UserV1ApiSpec {
         UserV1Response response = UserV1Response.from(userFacade.signUp(command));
         return ApiResponse.success(response);
     }
+
+    @GetMapping("/me")
+    @Override
+    public ApiResponse<UserV1Response> myProfile(@RequestHeader("X-USER-ID") String loginId) {
+        UserV1Response response = UserV1Response.from(userFacade.myProfile(loginId));
+        return ApiResponse.success(response);
+    }
 }

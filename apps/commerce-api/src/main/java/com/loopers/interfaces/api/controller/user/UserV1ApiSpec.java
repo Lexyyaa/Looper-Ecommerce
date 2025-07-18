@@ -17,4 +17,13 @@ public interface UserV1ApiSpec {
             @Schema(name = "입력한 회원정보", description = "입력한 회원정보")
             UserV1Request.SignUp request
     );
+
+    @Operation(
+            summary = "내 정보 조회",
+            description = "요청 헤더의 사용자 ID를 기반으로 현재 로그인한 사용자의 정보를 조회한다."
+    )
+    ApiResponse<UserV1Response> myProfile(
+            @Schema(name = "예시 ID", description = "조회할 예시의 ID")
+            String userId
+    );
 }

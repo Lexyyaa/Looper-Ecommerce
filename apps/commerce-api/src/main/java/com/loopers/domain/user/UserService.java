@@ -17,6 +17,12 @@ public class UserService {
         UserEntity user = userRepository.save(command.toModel());
         return UserInfo.UserDetail.from(user);
     }
+
+    @Transactional(readOnly = true)
+    public UserInfo.UserDetail myProfile(String loginId) {
+        UserEntity user = userRepository.findByLoginId(loginId).orElse(null);
+        return user == null ? null : UserInfo.UserDetail.from(user);
+    }
 }
 
 

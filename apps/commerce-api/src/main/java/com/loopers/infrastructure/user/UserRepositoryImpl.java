@@ -13,6 +13,11 @@ public class UserRepositoryImpl implements UserRepository {
     private final UserJpaRepository jpaRepository;
 
     @Override
+    public Optional<UserEntity> findByLoginId(String loginId) {
+        return jpaRepository.findbyLoginId(loginId);
+    }
+
+    @Override
     public UserEntity save(UserEntity user) {
         return jpaRepository.save(user);
     }
