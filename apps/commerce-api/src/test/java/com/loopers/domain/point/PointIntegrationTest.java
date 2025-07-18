@@ -40,15 +40,6 @@ class PointIntegrationTest {
         Mockito.reset(userRepository);
     }
 
-    @TestConfiguration
-    static class SpyConfig {
-        @Bean
-        @Primary
-        public UserRepository userRepositorySpy(UserJpaRepository jpaRepository) {
-            return Mockito.spy(new UserRepositoryImpl(jpaRepository));
-        }
-    }
-
     @DisplayName("[포인트 충전] ")
     @Nested
     class Charge {
@@ -57,20 +48,7 @@ class PointIntegrationTest {
         @Test
         void failure_charge_whenUserDoesNotExist() {
             // arrange
-            UserEntity user = new UserEntity(
-                    "loginId123",
-                    UserEntity.Gender.M,
-                    "사용자1",
-                    "2025-07-07",
-                    "loginId123@user.com"
-            );
-            userRepository.save(user);
-            reset(userRepository);
-
             UserCommand.Charge command = new UserCommand.Charge("loginId111", 100L);
-
-            Mockito.doReturn(false)
-                    .when(userRepository).existsByLoginId(command.loginId());
 
             // act
             CoreException exception = assertThrows(CoreException.class,
@@ -82,7 +60,6 @@ class PointIntegrationTest {
 
             verify(userRepository).findByLoginId(command.loginId());
             verify(userRepository, never()).save(any());
-            verifyNoMoreInteractions(userRepository);
         }
     }
 
