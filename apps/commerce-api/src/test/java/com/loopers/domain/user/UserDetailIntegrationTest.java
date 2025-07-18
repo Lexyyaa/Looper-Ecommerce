@@ -101,4 +101,47 @@ class UserDetailIntegrationTest {
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
         }
     }
+
+    @DisplayName("[내정보조회]  ")
+    @Nested
+    class MyProfile {
+
+        @DisplayName("[내정보조회 성공] 회원이 존재하면 프로필을 반환한다.")
+        @Test
+        void success_myProfile_whenUserExists() {
+
+            // arrange
+            UserEntity saved = new UserEntity(
+                    "loginId123",
+                    UserEntity.Gender.M,
+                    "사용자1",
+                    "2025-07-07",
+                    "loginId123@user.com"
+            );
+            userRepository.save(saved);
+
+            // act
+            UserInfo.UserDetail info = userService.myProfile(saved.getLoginId());
+
+            // assert
+            assertThat(info).isNotNull();
+            assertThat(info.loginId()).isEqualTo("loginId123");
+            assertThat(info.name()).isEqualTo("사용자1");
+
+        }
+
+        @DisplayName("[내정보조회 실패] 회원이 없을 경우 null 반환한다.")
+        @Test
+        void failure_myProfile_whenUserDoesNotExist() {
+
+            // arrange
+            String loginId = "loginId111";
+
+            // act
+            UserInfo.UserDetail info = userService.myProfile(loginId);
+
+            // assert
+            assertThat(info).isNull();
+        }
+    }
 }

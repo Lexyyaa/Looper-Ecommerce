@@ -116,5 +116,77 @@ public class UserV1ApiE2ETest {
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @DisplayName("[내정보조회] GET /api/v1/users/me ")
+    @Nested
+    class MyProfile {
+
+        private final String END_POINT = "/api/v1/users/me";
+
+        @DisplayName("내 정보 조회에 성공하면 유저 정보를 응답으로 반환한다.")
+        @Test
+        void success_myProfile_whenUserExists() {
+            // arrange
+            String loginId = "user123";
+            UserEntity user = new UserEntity(
+                    loginId,
+                    UserEntity.Gender.M,
+                    "사용자1",
+                    "2025-07-07",
+                    "loginId123@user.com"
+            );
+            userJpaRepository.save(user);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-USER-ID", loginId);
+
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+            // act
+            ParameterizedTypeReference<ApiResponse<UserV1Response>> responseType =
+                    new ParameterizedTypeReference<>() {};
+            ResponseEntity<ApiResponse<UserV1Response>> response =
+                    testRestTemplate.exchange(
+                            END_POINT,
+                            HttpMethod.GET,
+                            entity,
+                            responseType
+                    );
+
+            // assert
+            assertAll(
+                    () -> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK),
+                    () -> assertThat(response.getBody()).isNotNull(),
+                    () -> assertThat(response.getBody().data().loginId()).isEqualTo(loginId),
+                    () -> assertThat(response.getBody().data().name()).isEqualTo(user.getName()),
+                    () -> assertThat(response.getBody().data().birth()).isEqualTo(user.getBirth())
+            );
+        }
+
+        @DisplayName("존재하지 않는 ID로 조회하면 404 Not Found를 반환한다.")
+        @Test
+        void failure_myProfile_whenUserDoesNotExist() {
+            // arrange
+            String loginId = "user123";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-USER-ID", loginId);
+
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+            // act
+            ParameterizedTypeReference<ApiResponse<UserV1Response>> responseType =
+                    new ParameterizedTypeReference<>() {};
+            ResponseEntity<ApiResponse<UserV1Response>> response =
+                    testRestTemplate.exchange(
+                            END_POINT,
+                            HttpMethod.GET,
+                            entity,
+                            responseType
+                    );
+
+            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        }
+    }
 }
 
