@@ -275,14 +275,14 @@ sequenceDiagram
     deactivate 상품
 ```
 
-#### 내가 좋아요한 상품 목록 조회 (GET /api/v1/products/liked-by/{userId})
+#### 내가 좋아요한 상품 목록 조회 (GET /api/v1/products/likes)
 ```mermaid
 sequenceDiagram
     actor Client as Client
     participant 상품 as 상품
     participant 사용자 as 사용자
 
-    Client ->> 상품: 내가 좋아요한 상품 목록 조회 요청 (GET /api/v1/products/liked-by/{userId})
+    Client ->> 상품: 내가 좋아요한 상품 목록 조회 요청 (GET /api/v1/products/likes)
 
     activate 사용자
     상품 ->> 사용자: 사용자 존재여부 확인
