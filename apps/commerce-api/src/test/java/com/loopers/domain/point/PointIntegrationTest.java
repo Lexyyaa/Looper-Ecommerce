@@ -71,9 +71,9 @@ class PointIntegrationTest {
         @Test
         void success_myPoint_whenUserExists() {
             // arrange
-            UserEntity user = new UserEntity(
+            User user = new User(
                     "loginId123",
-                    UserEntity.Gender.M,
+                    User.Gender.M,
                     "사용자1",
                     "2025-07-07",
                     "loginId123@user.com",
