@@ -6,6 +6,7 @@ import com.loopers.domain.like.LikeTargetType;
 import com.loopers.domain.product.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class ProductApplicationService implements ProductUsecase {
     private final BrandService brandService;
 
     @Override
+    @Transactional(readOnly = true)
     public List<ProductInfo.Summary> getProductSummaries(ProductCommand.List command) {
         return productService.getProductSummaries(command).stream()
                 .map(ProductInfo.Summary::from)
@@ -26,6 +28,7 @@ public class ProductApplicationService implements ProductUsecase {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ProductInfo.Detail getProductDetail(Long productId) {
         // 상품정보조회
         Product product = productService.getProduct(productId);

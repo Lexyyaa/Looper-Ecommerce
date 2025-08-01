@@ -6,12 +6,13 @@ import com.loopers.domain.product.ProductService;
 import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @RequiredArgsConstructor
-@Service
+@Component
 public class LikeApplicationService implements LikeUsecase {
 
     private final UserService userService;
@@ -20,6 +21,7 @@ public class LikeApplicationService implements LikeUsecase {
     private final ProductService productService;
 
     @Override
+    @Transactional
     public void like(LikeCommand.Like command) {
         User user = userService.getUser(command.loginId());
         Product product = productService.getProduct(command.targetId());
@@ -28,14 +30,16 @@ public class LikeApplicationService implements LikeUsecase {
     }
 
     @Override
+    @Transactional
     public void unlike(LikeCommand.Like command) {
         User user = userService.getUser(command.loginId());
         Product product = productService.getProduct(command.targetId());
-        likeValidator.validateExists(user.getId(), product.getId(), command.targetType()); // 그 좋아요가 이미 잇는지 확인 (잇어야 삭제가능)
+        likeValidator.validateExists(user.getId(), product.getId(), command.targetType());
         likeService.delete(user.getId(), product.getId(), command.targetType());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<LikeInfo.LikedProduct> getLikedProducts(LikeCommand.LikedProducts command) {
 
         User user = userService.getUser(command.loginId());

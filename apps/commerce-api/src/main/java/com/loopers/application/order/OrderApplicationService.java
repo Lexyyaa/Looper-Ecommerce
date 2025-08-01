@@ -15,7 +15,6 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-@Transactional
 public class OrderApplicationService implements OrderUsecase {
 
     private final UserService userService;
@@ -24,6 +23,7 @@ public class OrderApplicationService implements OrderUsecase {
     private final OrderService orderService;
 
     @Override
+    @Transactional
     public OrderInfo.CreateOrder order(OrderCommand.CreateOrder command) {
 
         User user = userService.getUser(command.loginId());
@@ -50,6 +50,7 @@ public class OrderApplicationService implements OrderUsecase {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OrderInfo.OrderListItem> getOrdersByUserId(String loginId) {
         // 사용자조회
         User user = userService.getUser(loginId);
@@ -61,6 +62,7 @@ public class OrderApplicationService implements OrderUsecase {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OrderInfo.OrderDetail getOrderDetail(Long orderId) {
         Order order = orderService.getOrder(orderId);
         return OrderInfo.OrderDetail.from(order);

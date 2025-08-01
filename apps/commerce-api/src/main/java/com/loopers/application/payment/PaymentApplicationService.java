@@ -9,9 +9,11 @@ import com.loopers.domain.payment.PaymentService;
 import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class PaymentApplicationService implements PaymentUsecase {
 
@@ -20,6 +22,7 @@ public class PaymentApplicationService implements PaymentUsecase {
     private final PaymentService paymentService;
 
     @Override
+    @Transactional
     public PaymentInfo.CreatePayment createPayment(PaymentCommand.CreatePayment command) {
         //사용자 조회
         User user = userService.getUser(command.loginId());
