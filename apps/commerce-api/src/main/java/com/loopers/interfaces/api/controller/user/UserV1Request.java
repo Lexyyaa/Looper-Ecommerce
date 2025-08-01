@@ -1,7 +1,7 @@
 package com.loopers.interfaces.api.controller.user;
 
+import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserCommand;
-import com.loopers.domain.user.UserEntity;
 import jakarta.validation.constraints.NotNull;
 
 public class UserV1Request {
@@ -10,7 +10,7 @@ public class UserV1Request {
             @NotNull
             String loginId,
             @NotNull
-            UserEntity.Gender gender,
+            User.Gender gender,
             @NotNull
             String name,
             @NotNull
