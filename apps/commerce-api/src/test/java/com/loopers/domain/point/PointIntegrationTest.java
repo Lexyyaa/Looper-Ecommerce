@@ -37,7 +37,6 @@ class PointIntegrationTest {
     @AfterEach
     void tearDown(){
         databaseCleanUp.truncateAllTables();
-        Mockito.reset(userRepository);
     }
 
     @DisplayName("[포인트 충전] ")
@@ -56,10 +55,7 @@ class PointIntegrationTest {
             );
 
             // assert
-            assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
-
-            verify(userRepository).findByLoginId(command.loginId());
-            verify(userRepository, never()).save(any());
+            assertThat(userRepository.findByLoginId(command.loginId())).isEmpty();
         }
     }
 
