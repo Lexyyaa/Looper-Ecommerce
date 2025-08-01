@@ -1,0 +1,56 @@
+package com.loopers.infrastructure.product;
+
+import com.loopers.domain.product.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@RequiredArgsConstructor
+@Repository
+public class ProductRepositoryImpl implements ProductRepository {
+
+    private final ProductJpaRepository productJpaRepository;
+    private final ProductSkuJpaRepository productSkuJpaRepository;
+
+    @Override
+    public List<ProductSummaryProjection> findProductSummaries(Long brandId, ProductSortType sortType, int page, int size) {
+        return productJpaRepository.findProductSummaries(
+                brandId,
+                sortType.name(),
+                size,
+                page * size
+        );
+    }
+
+    @Override
+    public Optional<Product> findBy(Long productId) {
+        return productJpaRepository.findById(productId);
+    }
+
+    @Override
+    public Optional<ProductSku> findBySkuId(Long skuId) {
+        return productSkuJpaRepository.findById(skuId);
+    }
+
+    @Override
+    public List<ProductSku> findAllByProductId(Long productId) {
+        return productSkuJpaRepository.findAllByProductId(productId);
+    }
+
+    @Override
+    public Product saveProduct(Product product) {
+        return productJpaRepository.save(product);
+    }
+
+    @Override
+    public ProductSku saveProductSku(ProductSku productSku) {
+        return productSkuJpaRepository.save(productSku);
+    }
+
+    @Override
+    public boolean existsAvailableStock(Long productId) {
+        return productSkuJpaRepository.existsAvailableStock(productId);
+    }
+}
