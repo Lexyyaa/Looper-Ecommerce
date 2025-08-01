@@ -1,6 +1,6 @@
 package com.loopers.interfaces.api.user;
 
-import com.loopers.domain.user.UserEntity;
+import com.loopers.domain.user.User;
 import com.loopers.infrastructure.user.UserJpaRepository;
 import com.loopers.interfaces.api.ApiResponse;
 import com.loopers.interfaces.api.controller.user.UserV1Request;
@@ -55,7 +55,7 @@ public class UserV1ApiE2ETest {
             //arrange
             UserV1Request.SignUp request = new UserV1Request.SignUp(
                     "user123",
-                    UserEntity.Gender.M,
+                    User.Gender.M,
                     "사용자123",
                     "2025-07-07",
                     "user123@email.com"
@@ -128,9 +128,9 @@ public class UserV1ApiE2ETest {
         void success_myProfile_whenUserExists() {
             // arrange
             String loginId = "user123";
-            UserEntity user = new UserEntity(
+            User user = new User(
                     loginId,
-                    UserEntity.Gender.M,
+                    User.Gender.M,
                     "사용자1",
                     "2025-07-07",
                     "loginId123@user.com"

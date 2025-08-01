@@ -1,11 +1,10 @@
 package com.loopers.domain.point;
 
-import com.loopers.domain.user.UserEntity;
+import com.loopers.domain.user.User;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -23,9 +22,9 @@ class PointUnitTest {
         @ValueSource(longs = {0, -1000})
         void failure_charge_whenAmountIsZeroOrNegative(Long amount) {
 
-            UserEntity user = new UserEntity(
+            User user = new User(
                     "loginid",
-                    UserEntity.Gender.M,
+                    User.Gender.M,
                     "사용자1",
                     "2025-07-07",
                     "xx@yy.zz"

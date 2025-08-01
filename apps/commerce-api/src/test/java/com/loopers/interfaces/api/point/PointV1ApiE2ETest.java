@@ -1,6 +1,6 @@
 package com.loopers.interfaces.api.point;
 
-import com.loopers.domain.user.UserEntity;
+import com.loopers.domain.user.User;
 import com.loopers.infrastructure.user.UserJpaRepository;
 import com.loopers.interfaces.api.ApiResponse;
 import com.loopers.interfaces.api.controller.point.PointV1Request;
@@ -53,9 +53,9 @@ public class PointV1ApiE2ETest {
         void success_charge_whenUserExistsAndAmountIsValid() {
 
             String loginId = "user111";
-            UserEntity user = new UserEntity(
+            User user = new User(
                     loginId,
-                    UserEntity.Gender.M,
+                    User.Gender.M,
                     "사용자1",
                     "2025-07-07",
                     "loginId123@user.com",
@@ -136,9 +136,9 @@ public class PointV1ApiE2ETest {
         void success_myPoint_whenUserExists() {
             // arrange
             String loginId = "user111";
-            UserEntity user = new UserEntity(
+            User user = new User(
                     loginId,
-                    UserEntity.Gender.M,
+                    User.Gender.M,
                     "사용자1",
                     "2025-07-07",
                     "loginId123@user.com",

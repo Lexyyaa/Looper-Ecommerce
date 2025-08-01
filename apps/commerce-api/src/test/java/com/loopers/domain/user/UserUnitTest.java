@@ -29,9 +29,9 @@ class UserUnitTest {
         void failure_createUser_whenLoginIdIsInvalid(String userId) {
 
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new UserEntity(
+                new User(
                         userId,
-                        UserEntity.Gender.M,
+                        User.Gender.M,
                         "사용자1",
                         "2025-07-07",
                         "xx@yy.zz"
@@ -57,9 +57,9 @@ class UserUnitTest {
         void failure_createUser_whenEmailIsInvalid(String email) {
 
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new UserEntity(
+                new User(
                         "loginId1",
-                        UserEntity.Gender.M,
+                        User.Gender.M,
                         "사용자1",
                         "2025-07-07",
                         email
@@ -83,9 +83,9 @@ class UserUnitTest {
         void failure_createUser_whenBirthDateIsInvalid(String birth) {
 
             CoreException exception = assertThrows(CoreException.class, () -> {
-                new UserEntity(
+                new User(
                         "loginId1",
-                        UserEntity.Gender.M,
+                        User.Gender.M,
                         "사용자1",
                         birth,
                         "xx@yy.zz"
@@ -103,7 +103,7 @@ class UserUnitTest {
         void failure_createUser_whenGenderIsNull() {
 
             CoreException exception =  assertThrows(CoreException.class, () -> {
-                new UserEntity(
+                new User(
                         "loginId1",
                         null,
                         "사용자1",

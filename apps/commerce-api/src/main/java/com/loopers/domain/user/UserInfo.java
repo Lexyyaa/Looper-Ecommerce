@@ -5,12 +5,12 @@ public class UserInfo {
     public record UserDetail (
             Long id,
             String loginId,
-            UserEntity.Gender gender,
+            User.Gender gender,
             String name,
             String birth,
             String email
     ) {
-        public static UserDetail from (UserEntity model){
+        public static UserDetail from (User model){
             return new UserDetail(
                     model.getId(),
                     model.getLoginId(),
@@ -28,7 +28,7 @@ public class UserInfo {
             String name,
             Long point
     ){
-        public static Point from (UserEntity model){
+        public static Point from (User model){
             return new Point(
                     model.getId(),
                     model.getLoginId(),

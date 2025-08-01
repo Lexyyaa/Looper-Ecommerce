@@ -11,7 +11,8 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEntity extends BaseEntity {
+@Builder
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +41,7 @@ public class UserEntity extends BaseEntity {
         M, F
     }
 
-    public UserEntity(String loginId, Gender gender, String name, String birth, String email) {
+    public User(String loginId, Gender gender, String name, String birth, String email) {
 
         if (loginId == null || !loginId.matches("^[a-zA-Z0-9]{1,10}$")) {
             throw new CoreException(
@@ -71,7 +72,7 @@ public class UserEntity extends BaseEntity {
         this.point = 0L;
     }
 
-    public UserEntity(String loginId, Gender gender, String name, String birth, String email, Long point) {
+    public User(String loginId, Gender gender, String name, String birth, String email, Long point) {
         this.loginId = loginId;
         this.gender = gender;
         this.name = name;

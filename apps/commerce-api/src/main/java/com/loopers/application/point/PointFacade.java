@@ -6,6 +6,7 @@ import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
@@ -17,6 +18,7 @@ public class PointFacade {
         return userService.charge(command);
     }
 
+    @Transactional
     public UserInfo.Point myPoint(String loginId){
         UserInfo.Point userPoint = userService.myPoint(loginId);
 
