@@ -13,15 +13,14 @@ public class LikeInfo {
             Product.Status status,
             LocalDateTime createdAt
     ) {
-//        public static LikeInfo.LikedProduct from(LikedProduct product) {
-//            return new LikeInfo.LikedProduct(
-//                    product.id(),
-//                    product.name(),
-//                    product.price(),
-//                    product.likeCount(),
-//                    product.status(),
-//                    product.createdAt()
-//            );
-//        }
+    }
+
+    public record Like(
+            Long targetId,
+            LikeTargetType targetType
+    ) {
+        public static LikeInfo.Like of(Long targetId, LikeTargetType targetType) {
+            return new LikeInfo.Like(targetId, targetType);
+        }
     }
 }
