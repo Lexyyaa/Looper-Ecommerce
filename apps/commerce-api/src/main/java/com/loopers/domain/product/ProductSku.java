@@ -28,11 +28,21 @@ public class ProductSku extends BaseEntity {
     @Column(name = "price", nullable = false)
     private int price;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private ProductSku.Status status;
+
     @Column(name = "stock_total", nullable = false)
     private int stockTotal;
 
     @Column(name = "stock_reserved", nullable = false)
     private int stockReserved;
+
+    public enum Status {
+        ACTIVE,
+        INACTIVE,
+        SOLD_OUT
+    }
 
     public static ProductSku create(Product product, String sku, int price, int stockTotal, int stockReserved) {
         return ProductSku.builder()
@@ -56,8 +66,14 @@ public class ProductSku extends BaseEntity {
         if (avaliableQunatity() < quantity) {
             throw new CoreException(ErrorType.BAD_REQUEST, "재고가 부족합니다.");
         }
-
         stockReserved += quantity;
+    }
+
+    public void rollbackStock(int quantity) {
+        if(stockReserved < quantity){
+            throw new CoreException(ErrorType.BAD_REQUEST, "요청재고는 선점재고를 초과할 수 없습니다.");
+        }
+        stockReserved -= quantity;
     }
 }
 
