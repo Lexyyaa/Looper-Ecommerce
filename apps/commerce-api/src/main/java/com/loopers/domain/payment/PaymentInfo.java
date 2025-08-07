@@ -24,4 +24,24 @@ public class PaymentInfo {
             );
         }
     }
+
+    public record CancelPayment(
+            Long paymentId,
+            Long orderId,
+            Long userId,
+            Payment.Method method,
+            Payment.Status status,
+            ZonedDateTime updatedAt
+    ) {
+        public static CancelPayment from(Payment payment) {
+            return new CancelPayment(
+                    payment.getId(),
+                    payment.getOrderId(),
+                    payment.getUserId(),
+                    payment.getMethod(),
+                    payment.getStatus(),
+                    payment.getUpdatedAt()
+            );
+        }
+    }
 }
