@@ -15,4 +15,14 @@ public class OrderCommand {
             Long productSkuId,
             int quantity
     ) {}
+
+    public record CancelOrder(
+            String loginId,
+            Long orderId
+    ) {}
+
+    public record OrderDetail(
+            String loginId,
+            Long orderId
+    ) {}
 }

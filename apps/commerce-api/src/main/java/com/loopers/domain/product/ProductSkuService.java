@@ -30,6 +30,12 @@ public class ProductSkuService {
         productRepository.saveProductSku(sku);
     }
 
+    public void rollbackReservedStock(Long skuId, int quantity) {
+        ProductSku sku = getBySkuId(skuId);
+        sku.rollbackStock(quantity);
+        productRepository.saveProductSku(sku);
+    }
+
     public boolean isAllSoldOut(Long productId) {
         return productRepository.existsAvailableStock(productId);
     }

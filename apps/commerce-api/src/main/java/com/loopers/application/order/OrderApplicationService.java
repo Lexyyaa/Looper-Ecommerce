@@ -67,4 +67,22 @@ public class OrderApplicationService implements OrderUsecase {
         Order order = orderService.getOrder(orderId);
         return OrderInfo.OrderDetail.from(order);
     }
+
+    @Override
+    @Transactional
+    public OrderInfo.CancelOrder cancelOrder(OrderCommand.CancelOrder command) {
+        // 사용자 조회
+        User user = userService.getUser(command.loginId());
+        // 주문 조회
+        Order order = orderService.getOrder(command.orderId());
+        // 취소 가능 여부 검증
+        orderService.validateCancelable(order,user);
+        // 재고 복구
+        order.getOrderItems().forEach(item ->
+                productSkuService.rollbackReservedStock(item.getProductSkuId(), item.getQuantity())
+        );
+        // 주문 상태 변경 및 저장
+        orderService.cancelOrder(order);
+        return OrderInfo.CancelOrder.from(order);
+    }
 }

@@ -78,4 +78,20 @@ public class OrderInfo {
             );
         }
     }
+
+    public record CancelOrder(
+            Long orderId,
+            Long userId,
+            Order.Status status,
+            ZonedDateTime updatedAt
+    ) {
+        public static CancelOrder from(Order order) {
+            return new CancelOrder(
+                    order.getId(),
+                    order.getUserId(),
+                    order.getStatus(),
+                    order.getUpdatedAt()
+            );
+        }
+    }
 }
