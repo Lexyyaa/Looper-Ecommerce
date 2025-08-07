@@ -55,7 +55,7 @@ class UserDetailIntegrationTest {
             // arrange
             UserCommand.SignUp command = new UserCommand.SignUp(
                     "loginId123",
-                    UserEntity.Gender.M,
+                    User.Gender.M,
                     "사용자1",
                     "2025-07-07",
                     "loginId123@user.com"
@@ -71,7 +71,7 @@ class UserDetailIntegrationTest {
             assertThat(info.loginId()).isEqualTo("loginId123");
             assertThat(info.name()).isEqualTo("사용자1");
 
-            verify(userRepository).save(any(UserEntity.class));
+            verify(userRepository).save(any(User.class));
         }
 
         @DisplayName("[회원가입 실패]이미 존재하는 로그인 ID 로 회원가입을 시도하면 BAD_REQUEST 가 발생하고 저장은 실행되지 않는다.")
@@ -79,9 +79,9 @@ class UserDetailIntegrationTest {
         void failure_signUp_whenLoginIdExists() {
 
             //arrange
-            UserEntity saved = new UserEntity(
+            User saved = new User(
                     "loginId123",
-                    UserEntity.Gender.M,
+                    User.Gender.M,
                     "사용자1",
                     "2025-07-07",
                     "loginId123@user.com"
@@ -89,7 +89,7 @@ class UserDetailIntegrationTest {
             userRepository.save(saved);
 
             UserCommand.SignUp command = new UserCommand.SignUp(
-                    "loginId123", UserEntity.Gender.M,"사용자2","2025-07-07","loginId123@user.com"
+                    "loginId123", User.Gender.M,"사용자2","2025-07-07","loginId123@user.com"
             );
 
             // act
@@ -111,9 +111,9 @@ class UserDetailIntegrationTest {
         void success_myProfile_whenUserExists() {
 
             // arrange
-            UserEntity saved = new UserEntity(
+            User saved = new User(
                     "loginId123",
-                    UserEntity.Gender.M,
+                    User.Gender.M,
                     "사용자1",
                     "2025-07-07",
                     "loginId123@user.com"

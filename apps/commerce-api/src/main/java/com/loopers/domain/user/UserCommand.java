@@ -7,13 +7,13 @@ public class UserCommand {
     @Builder
     public record SignUp(
             String loginId,
-            UserEntity.Gender gender,
+            User.Gender gender,
             String name,
             String birth,
             String email
     ){
-        public UserEntity toModel() {
-            return new UserEntity(
+        public User toModel() {
+            return new User(
                     this.loginId,
                     this.gender,
                     this.name,

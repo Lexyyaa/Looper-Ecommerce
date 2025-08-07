@@ -1,12 +1,12 @@
 package com.loopers.interfaces.api.controller.user;
 
+import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserInfo;
-import com.loopers.domain.user.UserEntity;
 
 public record UserV1Response(
         Long id,
         String loginId,
-        UserEntity.Gender gender,
+        User.Gender gender,
         String name,
         String birth,
         String email
