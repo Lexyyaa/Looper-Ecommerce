@@ -5,4 +5,6 @@ import com.loopers.domain.payment.PaymentInfo;
 
 public interface PaymentUsecase {
     PaymentInfo.CreatePayment createPayment(PaymentCommand.CreatePayment command);
+    PaymentInfo.CancelPayment cancelPayment(PaymentCommand.CancelPayment command);
+
 }

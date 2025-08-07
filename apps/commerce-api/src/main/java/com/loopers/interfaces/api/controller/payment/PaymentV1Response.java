@@ -5,7 +5,7 @@ import com.loopers.domain.payment.PaymentInfo;
 
 import java.time.ZonedDateTime;
 
-public class PaymentResponse {
+public class PaymentV1Response {
     public record CreatePayment(
             Long paymentId,
             Long userId,
@@ -24,6 +24,26 @@ public class PaymentResponse {
                     info.method(),
                     info.status(),
                     info.createdAt()
+            );
+        }
+    }
+
+    public record CancelPayment(
+            Long paymentId,
+            Long orderId,
+            Long userId,
+            String method,
+            String status,
+            ZonedDateTime updatedAt
+    ) {
+        public static CancelPayment from(PaymentInfo.CancelPayment info) {
+            return new CancelPayment(
+                    info.paymentId(),
+                    info.orderId(),
+                    info.userId(),
+                    info.method().name(),
+                    info.status().name(),
+                    info.updatedAt()
             );
         }
     }
