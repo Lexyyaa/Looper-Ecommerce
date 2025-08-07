@@ -27,9 +27,10 @@ public class Product extends BaseEntity {
     private Long brandId;
 
     public enum Status {
-        ACTIVE,
-        INACTIVE,
-        SOLD_OUT
+        ACTIVE, // 판매중
+        INACTIVE, // 판매중지
+        SOLD_OUT, // 완전품절
+        TEMPORARILY_UNAVAILABLE, // 일시품절
     }
 
     public static Product create(String name, Product.Status status, Long brandId) {
