@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-public class OrderResponse {
+public class OrderV1Response {
 
     public record CreateOrder(
             Long orderId,
@@ -79,6 +79,22 @@ public class OrderResponse {
                     info.price(),
                     info.status().name(),
                     info.createdAt()
+            );
+        }
+    }
+
+    public record CancelOrder(
+            Long orderId,
+            Long userId,
+            String status,
+            ZonedDateTime updatedAt
+    ) {
+        public static CancelOrder from(OrderInfo.CancelOrder info) {
+            return new CancelOrder(
+                    info.orderId(),
+                    info.userId(),
+                    info.status().name(),
+                    info.updatedAt()
             );
         }
     }
