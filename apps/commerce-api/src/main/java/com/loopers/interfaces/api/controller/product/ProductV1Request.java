@@ -5,7 +5,7 @@ import com.loopers.domain.product.ProductSortType;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
-public class ProductRequest{
+public class ProductV1Request {
     public record List(
             @PositiveOrZero Integer page,
             @Positive Integer size,

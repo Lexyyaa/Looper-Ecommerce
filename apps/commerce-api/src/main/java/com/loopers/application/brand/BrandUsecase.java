@@ -1,7 +1,7 @@
 package com.loopers.application.brand;
 
-import com.loopers.interfaces.api.controller.brand.BrandResponse;
+import com.loopers.interfaces.api.controller.brand.BrandV1Response;
 
 public interface BrandUsecase {
-    BrandResponse getBrandInfo(Long brandId);
+    BrandV1Response getBrandInfo(Long brandId);
 }

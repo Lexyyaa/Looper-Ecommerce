@@ -5,7 +5,7 @@ import com.loopers.domain.product.ProductInfo;
 
 import java.util.List;
 
-public class ProductResponse{
+public class ProductV1Response {
 
     public record Summaries(
             long totalCount,

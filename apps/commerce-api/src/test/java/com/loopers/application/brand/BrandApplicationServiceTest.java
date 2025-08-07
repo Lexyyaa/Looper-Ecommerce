@@ -2,7 +2,7 @@ package com.loopers.application.brand;
 
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.brand.BrandService;
-import com.loopers.interfaces.api.controller.brand.BrandResponse;
+import com.loopers.interfaces.api.controller.brand.BrandV1Response;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.DisplayName;
@@ -37,7 +37,7 @@ class BrandApplicationServiceTest {
             Brand brand = Brand.create("나이키", "스포츠 브랜드");
             when(brandService.get(1L)).thenReturn(brand);
 
-            BrandResponse result = brandApplicationService.getBrandInfo(1L);
+            BrandV1Response result = brandApplicationService.getBrandInfo(1L);
 
             assertEquals("나이키", result.name());
             assertEquals("스포츠 브랜드", result.description());
