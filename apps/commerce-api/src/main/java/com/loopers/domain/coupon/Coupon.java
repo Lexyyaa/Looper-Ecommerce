@@ -1,17 +1,22 @@
 package com.loopers.domain.coupon;
 
-import com.loopers.domain.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "discount_type", discriminatorType = DiscriminatorType.STRING)
 @Table(name = "coupon")
 @Getter
-public abstract class Coupon extends BaseEntity {
+@SuperBuilder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public abstract class Coupon {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +51,15 @@ public abstract class Coupon extends BaseEntity {
     @Column(name = "min_order_amount")
     protected BigDecimal minOrderAmount;
 
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private ZonedDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private ZonedDateTime updatedAt;
+
+    @Column(name = "deleted_at")
+    private ZonedDateTime deletedAt;
+
     public enum DiscountType {
         AMOUNT, RATE
     }
@@ -55,4 +69,17 @@ public abstract class Coupon extends BaseEntity {
     }
 
     public abstract BigDecimal discount(BigDecimal originalAmount);
+
+    @PrePersist
+    void onCreate() {
+        ZonedDateTime now = ZonedDateTime.now();
+        if (createdAt == null) createdAt = now;
+        if (updatedAt == null) updatedAt = now;
+        if (minOrderAmount == null) minOrderAmount = BigDecimal.ZERO;
+    }
+
+    @PreUpdate
+    void onUpdate() {
+        updatedAt = ZonedDateTime.now();
+    }
 }

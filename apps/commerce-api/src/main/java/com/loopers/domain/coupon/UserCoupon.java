@@ -4,12 +4,15 @@ import com.loopers.domain.BaseEntity;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_coupon")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Getter
 public class UserCoupon extends BaseEntity {
 
@@ -39,6 +42,20 @@ public class UserCoupon extends BaseEntity {
 
     public enum CouponStatus {
         ISSUED, USED, CANCELED
+    }
+
+    public static UserCoupon create(Long userId,
+                                    Coupon coupon,
+                                    CouponStatus status,
+                                    LocalDateTime issuedAt,
+                                    LocalDateTime expiredAt) {
+        return UserCoupon.builder()
+                .userId(userId)
+                .coupon(coupon)
+                .status(status)
+                .issuedAt(issuedAt)
+                .expiredAt(expiredAt)
+                .build();
     }
 
     public void checkAvailability(Long currentUserId) {

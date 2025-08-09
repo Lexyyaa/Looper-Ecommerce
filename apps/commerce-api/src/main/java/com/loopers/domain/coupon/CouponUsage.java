@@ -38,12 +38,11 @@ public class CouponUsage  extends BaseEntity {
     @Column(name = "used_at", nullable = false)
     private LocalDateTime usedAt;
 
-    public static CouponUsage create(UserCoupon userCoupon, Order order, BigDecimal discountedAmount) {
+    public static CouponUsage create(UserCoupon userCoupon, BigDecimal discountedAmount) {
         Coupon coupon = userCoupon.getCoupon();
 
         return CouponUsage.builder()
                 .userCoupon(userCoupon)
-                .order(order)
                 .discountedAmount(discountedAmount)
                 .targetType(coupon.getTargetType())
                 .usedAt(LocalDateTime.now())
