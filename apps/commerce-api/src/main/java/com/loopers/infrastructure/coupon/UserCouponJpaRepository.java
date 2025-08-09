@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface UserCouponJpaRepository extends JpaRepository<UserCoupon, Long> {
-
     Optional<UserCoupon> findById(Long Id);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
