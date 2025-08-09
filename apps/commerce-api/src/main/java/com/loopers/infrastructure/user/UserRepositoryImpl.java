@@ -26,4 +26,9 @@ public class UserRepositoryImpl implements UserRepository {
     public boolean existsByLoginId(String loginId) {
         return jpaRepository.existsByLoginId(loginId);
     }
+
+    @Override
+    public Optional<User> findByLoginIdWithPessimisticLock(String loginId) {
+        return jpaRepository.findByLoginIdWithPessimisticLock(loginId);
+    }
 }
