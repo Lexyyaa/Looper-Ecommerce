@@ -18,6 +18,9 @@ public class ProductSku extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
@@ -48,6 +51,7 @@ public class ProductSku extends BaseEntity {
         return ProductSku.builder()
                 .product(product)
                 .sku(sku)
+                .status(Status.ACTIVE)
                 .price(price)
                 .stockTotal(stockTotal)
                 .stockReserved(stockReserved)
@@ -58,12 +62,19 @@ public class ProductSku extends BaseEntity {
         return (stockTotal - stockReserved) <= 0;
     }
 
-    public int avaliableQunatity() {
+    public void changeStatus(ProductSku.Status status) {
+        this.status = status;
+    }
+
+    public int availableQuantity() {
         return (stockTotal - stockReserved);
     }
 
     public void reserveStock(int quantity) {
-        if (avaliableQunatity() < quantity) {
+        if (quantity < 1) {
+            throw new CoreException(ErrorType.BAD_REQUEST, "선점 수량은 1 이상이어야 합니다.");
+        }
+        if (availableQuantity() < quantity) {
             throw new CoreException(ErrorType.BAD_REQUEST, "재고가 부족합니다.");
         }
         stockReserved += quantity;

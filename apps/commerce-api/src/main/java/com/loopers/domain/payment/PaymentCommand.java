@@ -5,7 +5,7 @@ public class PaymentCommand {
             String loginId,
             Long orderId,
             Long amount,
-            String method // "POINT" or "CREDIT"
+            String method
     ) {}
 
     public record CancelPayment(

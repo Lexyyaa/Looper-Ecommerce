@@ -34,6 +34,14 @@ public class UserService {
     }
 
     @Transactional
+    public User getUserWithLock(String loginId) {
+        User user = userRepository.findByLoginIdWithPessimisticLock(loginId).orElseThrow(
+                () -> new CoreException(ErrorType.NOT_FOUND, "해당 사용자를 찾을 수 없습니다.")
+        );
+        return user;
+    }
+
+    @Transactional
     public UserInfo.Point charge(UserCommand.Charge command){
         User currPoint = userRepository.findByLoginId(command.loginId()).orElseThrow(
                 () -> new CoreException(ErrorType.NOT_FOUND, "해당 사용자를 찾을 수 없습니다.")
@@ -44,10 +52,16 @@ public class UserService {
         return UserInfo.Point.from(point);
     }
 
-
     public UserInfo.Point myPoint(String loginId){
         User user = userRepository.findByLoginId(loginId).orElse(null);
         return user == null ? null : UserInfo.Point.from(user);
+    }
+
+    public UserInfo.Point use(String loginId,Long amount){
+        User currPoint = userRepository.findByLoginIdWithPessimisticLock(loginId).orElse(null);
+        currPoint.use(amount);
+        User point = userRepository.save(currPoint);
+        return UserInfo.Point.from(point);
     }
 }
 

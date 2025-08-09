@@ -1,6 +1,8 @@
 package com.loopers.application.order;
 
+import com.loopers.domain.coupon.CouponService;
 import com.loopers.domain.order.*;
+import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductService;
 import com.loopers.domain.product.ProductSku;
 import com.loopers.domain.product.ProductSkuService;
@@ -10,8 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
-
 
 @Component
 @RequiredArgsConstructor
@@ -21,31 +23,37 @@ public class OrderApplicationService implements OrderUsecase {
     private final ProductSkuService productSkuService;
     private final ProductService productService;
     private final OrderService orderService;
+    private final CouponService couponService;
 
     @Override
     @Transactional
     public OrderInfo.CreateOrder order(OrderCommand.CreateOrder command) {
 
         User user = userService.getUser(command.loginId());
-        Order order = Order.create(user.getId(), 0L);
 
-        // 주문항목 처리
+        // 주문 생성 및 주문 총액 계산
+        Order order = Order.create(user.getId(),0L);
+        BigDecimal initialPrice = BigDecimal.ZERO;
+
+        for (OrderCommand.OrderItemCommand itemCommand : command.items()) {
+            ProductSku sku = productSkuService.getBySkuIdWithLock(itemCommand.productSkuId());
+            productSkuService.reserveStock(sku, itemCommand.quantity());
+            initialPrice = initialPrice.add(BigDecimal.valueOf(sku.getPrice()).multiply(BigDecimal.valueOf(itemCommand.quantity())));
+            order.addOrderItem(OrderItem.create(itemCommand.productSkuId(), itemCommand.quantity()));
+        }
+        order.updatePrice(initialPrice.longValue());
+
+        // 쿠폰 적용
+        couponService.applyCouponsToOrder(command, user, order);
+        // 주문 저장
+        Order savedOrder = orderService.saveOrder(order);
+        // 상품 상태 업데이트
         command.items().forEach(item -> {
-            // 재고조회
             ProductSku sku = productSkuService.getBySkuId(item.productSkuId());
-            // 재고선점
-            productSkuService.reserveStock(sku, item.quantity());
-            //관련상품의 모든 옵션애 대해 재고 판단.
             boolean isAllSoldOut = productSkuService.isAllSoldOut(sku.getProduct().getId());
-            //isAllSoldOut == true 라면 상태값바꿈
-            productService.updateStatus(isAllSoldOut,sku.getProduct().getId());
-            // 가격합산
-            order.addPrice((long) (sku.getPrice() * item.quantity()));
-            // 주문항목 추가
-            order.addOrderItem(OrderItem.create(sku.getId(), item.quantity()));
+            productService.updateStatus(isAllSoldOut, sku.getProduct().getId());
         });
 
-        Order savedOrder = orderService.saveOrder(order);
         return OrderInfo.CreateOrder.from(savedOrder);
     }
 

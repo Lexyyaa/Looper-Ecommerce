@@ -9,6 +9,7 @@ public class OrderInfo {
             Long orderId,
             Long userId,
             Long price,
+            Long finalPrice,
             Order.Status status,
             ZonedDateTime createdAt,
             List<OrderItemInfo> items
@@ -18,6 +19,7 @@ public class OrderInfo {
                     order.getId(),
                     order.getUserId(),
                     order.getPrice(),
+                    order.getFinalPrice(),
                     order.getStatus(),
                     order.getCreatedAt(),
                     order.getOrderItems().stream()

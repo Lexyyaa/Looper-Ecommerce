@@ -19,7 +19,7 @@ public class Payment extends BaseEntity {
     }
 
     public enum Status {
-        PAID, CANCELLED
+        PENDING, PAID, CANCELLED
     }
 
     @Column(name = "user_id", nullable = false, updatable = false)
@@ -39,9 +39,22 @@ public class Payment extends BaseEntity {
     @Column(nullable = false)
     private Status status;
 
-    public void cancel() {
+    public void pay(Long userId) {
+        if (this.status == Status.PAID) {
+            throw new CoreException(ErrorType.CONFLICT, "이미 결제 완료 상태입니다.");
+        }
         if (this.status == Status.CANCELLED) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "이미 취소된 결제입니다.");
+            throw new CoreException(ErrorType.BAD_REQUEST, "취소된 건은 결제할 수 없습니다.");
+        }
+        this.status = Status.PAID;
+    }
+
+    public void cancel(Long userId) {
+        if (this.getStatus() == Payment.Status.CANCELLED) {
+            throw new CoreException(ErrorType.BAD_REQUEST,"이미 취소된 결제입니다.");
+        }
+        if (this.status != Status.PAID) {
+            throw new CoreException(ErrorType.BAD_REQUEST, "결제 완료 건만 취소할 수 있습니다.");
         }
         this.status = Status.CANCELLED;
     }
@@ -52,7 +65,7 @@ public class Payment extends BaseEntity {
                 .orderId(orderId)
                 .amount(amount)
                 .method(method)
-                .status(Status.PAID)
+                .status(Status.PENDING)
                 .build();
     }
 }

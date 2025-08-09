@@ -81,6 +81,17 @@ public class User extends BaseEntity {
         this.point = point;
     }
 
+    public static User create(String loginId, Gender gender, String name, String birth, String email, Long point) {
+        return User.builder()
+                .loginId(loginId)
+                .gender(gender)
+                .name(name)
+                .birth(birth)
+                .email(email)
+                .point(point)
+                .build();
+    }
+
     public static void validateUniqueLoginId(boolean exists) {
         if(exists){
             throw new CoreException(ErrorType.BAD_REQUEST,"이미 존재하는 ID 입니다.");
@@ -92,5 +103,15 @@ public class User extends BaseEntity {
             throw new CoreException(ErrorType.BAD_REQUEST,"충전 금액은 0 보다 커야 합니다.");
         }
         this.point += amount;
+    }
+
+    public void use(Long amount){
+        if(amount <= 0){
+            throw new CoreException(ErrorType.BAD_REQUEST,"결제 금액은 0 보다 커야 합니다.");
+        }
+        if(amount > point){
+            throw new CoreException(ErrorType.BAD_REQUEST,"보유 포인트가 부족합니다.");
+        }
+        this.point -= amount;
     }
 }

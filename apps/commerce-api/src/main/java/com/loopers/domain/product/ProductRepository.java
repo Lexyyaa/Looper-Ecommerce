@@ -16,6 +16,9 @@ public interface ProductRepository {
     Product saveProduct(Product product);
 
     ProductSku saveProductSku(ProductSku productSku);
+    ProductSku saveProductSkuAndFlush(ProductSku productSku);
 
     boolean existsAvailableStock(Long productId);
+
+    Optional<ProductSku> findByIdWithOptimisticLock(Long skuId);
 }

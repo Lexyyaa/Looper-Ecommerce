@@ -50,7 +50,19 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    public ProductSku saveProductSkuAndFlush(ProductSku productSku) {
+        ProductSku savedProductSku = productSkuJpaRepository.save(productSku);
+        productSkuJpaRepository.flush();
+        return savedProductSku;
+    }
+
+    @Override
     public boolean existsAvailableStock(Long productId) {
         return productSkuJpaRepository.existsAvailableStock(productId);
+    }
+
+    @Override
+    public Optional<ProductSku> findByIdWithOptimisticLock(Long skuId) {
+        return productSkuJpaRepository.findByIdWithOptimisticLock(skuId);
     }
 }

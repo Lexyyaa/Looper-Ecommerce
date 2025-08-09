@@ -6,5 +6,6 @@ public interface UserRepository {
     Optional<User> findByLoginId(String loginId);
     User save(User user);
     boolean existsByLoginId(String loginId);
+    Optional<User> findByLoginIdWithPessimisticLock(String loginId);
 }
 
