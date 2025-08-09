@@ -6,14 +6,14 @@ public class OrderCommand {
 
     public record CreateOrder(
             String loginId,
-            List<OrderItemCommand> items
-    ) {
-
-    }
+            List<OrderItemCommand> items,
+            Long cartCouponId
+    ) {}
 
     public record OrderItemCommand(
             Long productSkuId,
-            int quantity
+            int quantity,
+            Long itemCouponId
     ) {}
 
     public record CancelOrder(
@@ -26,3 +26,7 @@ public class OrderCommand {
             Long orderId
     ) {}
 }
+
+
+
+
