@@ -3,7 +3,10 @@ package com.loopers.domain.product;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,12 +25,21 @@ public class ProductSkuService {
                 .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND,"존재하지 않는 상품 SKUID: " + skuId));
     }
 
-    public void reserveStock(ProductSku sku, int qty) {
-        if (sku.avaliableQunatity() < qty) {
-            throw new CoreException(ErrorType.BAD_REQUEST,"재고가 부족합니다.");
+    public ProductSku getBySkuIdWithLock(Long skuId) {
+        return productRepository.findByIdWithOptimisticLock(skuId)
+                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND,"존재하지 않는 상품 SKUID: " + skuId));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public ProductSku reserveStock(Long skuId, int qty) {
+        try {
+            ProductSku sku = productRepository.findByIdWithOptimisticLock(skuId)
+                    .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 상품 SKUID: " + skuId));
+            sku.reserveStock(qty);
+            return productRepository.saveProductSku(sku);
+        } catch (ObjectOptimisticLockingFailureException e) {
+            throw new CoreException(ErrorType.CONFLICT, "동시에 다른 주문이 재고를 선점했습니다. 다시 시도해 주세요.");
         }
-        sku.reserveStock(qty);
-        productRepository.saveProductSku(sku);
     }
 
     public void rollbackReservedStock(Long skuId, int quantity) {
@@ -37,6 +49,6 @@ public class ProductSkuService {
     }
 
     public boolean isAllSoldOut(Long productId) {
-        return productRepository.existsAvailableStock(productId);
+        return !productRepository.existsAvailableStock(productId);
     }
 }
