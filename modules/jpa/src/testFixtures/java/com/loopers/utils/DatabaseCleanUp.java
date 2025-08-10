@@ -1,6 +1,5 @@
 package com.loopers.utils;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Table;
@@ -8,23 +7,36 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Component
 public class DatabaseCleanUp implements InitializingBean {
 
     @PersistenceContext
     private EntityManager entityManager;
-
-    private final List<String> tableNames = new ArrayList<>();
+    private List<String> tableNames;
 
     @Override
     public void afterPropertiesSet() {
-        entityManager.getMetamodel().getEntities().stream()
-            .filter(entity -> entity.getJavaType().getAnnotation(Entity.class) != null)
-            .map(entity -> entity.getJavaType().getAnnotation(Table.class).name())
-            .forEach(tableNames::add);
+        this.tableNames = entityManager.getMetamodel().getEntities().stream()
+                .map(entityType -> {
+                    Class<?> javaType = entityType.getJavaType();
+                    Table tableAnnotation = javaType.getAnnotation(Table.class);
+
+                    if (tableAnnotation != null) {
+                        return tableAnnotation.name();
+                    }
+                    Class<?> superclass = javaType.getSuperclass();
+                    if (superclass != null && superclass.isAnnotationPresent(Table.class)) {
+                        return superclass.getAnnotation(Table.class).name();
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     @Transactional

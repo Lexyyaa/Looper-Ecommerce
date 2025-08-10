@@ -51,7 +51,8 @@ class OrderApplicationServiceTest {
         void success_order() {
             OrderCommand.CreateOrder cmd = new OrderCommand.CreateOrder(
                     "loginId",
-                    List.of(new OrderCommand.OrderItemCommand(10L, 2))
+                    List.of(new OrderCommand.OrderItemCommand(10L, 2,null))
+                    , 1L
             );
             User user = User.builder().id(1L).build();
             ProductSku sku = ProductSku.builder()
@@ -73,7 +74,11 @@ class OrderApplicationServiceTest {
         @Test
         @DisplayName("[실패] 존재하지 않는 사용자일 경우 NOT_FOUND 에러를 반환한다.")
         void failure_userNotFound() {
-            OrderCommand.CreateOrder cmd = new OrderCommand.CreateOrder("loginId", List.of());
+            OrderCommand.CreateOrder cmd = new OrderCommand.CreateOrder(
+                    "loginId",
+                    List.of(new OrderCommand.OrderItemCommand(10L, 2,null)),
+                    1L
+            );
             when(userService.getUser("loginId"))
                     .thenThrow(new CoreException(ErrorType.NOT_FOUND, "사용자 없음"));
 
@@ -88,7 +93,8 @@ class OrderApplicationServiceTest {
         void failure_skuNotFound() {
             OrderCommand.CreateOrder cmd = new OrderCommand.CreateOrder(
                     "loginId",
-                    List.of(new OrderCommand.OrderItemCommand(10L, 1))
+                    List.of(new OrderCommand.OrderItemCommand(10L, 2,null)),
+                    1L
             );
             User user = User.builder().id(1L).build();
             when(userService.getUser("loginId")).thenReturn(user);
@@ -106,7 +112,8 @@ class OrderApplicationServiceTest {
         void failure_insufficientStock() {
             OrderCommand.CreateOrder cmd = new OrderCommand.CreateOrder(
                     "loginId",
-                    List.of(new OrderCommand.OrderItemCommand(10L, 5))
+                    List.of(new OrderCommand.OrderItemCommand(10L, 2,null)),
+                    1L
             );
             User user = User.builder().id(1L).build();
             ProductSku sku = ProductSku.builder().id(10L).build();
@@ -126,7 +133,8 @@ class OrderApplicationServiceTest {
         void success_updateProductStatusToSoldOut() {
             OrderCommand.CreateOrder cmd = new OrderCommand.CreateOrder(
                     "loginId",
-                    List.of(new OrderCommand.OrderItemCommand(10L, 2))
+                    List.of(new OrderCommand.OrderItemCommand(10L, 2,null)),
+                    1L
             );
 
             User user = User.builder().id(1L).build();
@@ -156,9 +164,9 @@ class OrderApplicationServiceTest {
         void success_doNotUpdateStatusWhenNotAllSoldOut() {
             OrderCommand.CreateOrder cmd = new OrderCommand.CreateOrder(
                     "loginId",
-                    List.of(new OrderCommand.OrderItemCommand(10L, 2))
+                    List.of(new OrderCommand.OrderItemCommand(10L, 2,null)),
+                    1L
             );
-
             User user = User.builder().id(1L).build();
 
             ProductSku sku = ProductSku.builder()
