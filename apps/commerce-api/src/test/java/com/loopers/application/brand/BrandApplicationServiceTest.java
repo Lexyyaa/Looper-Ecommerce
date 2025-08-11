@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("BrandApplicationService")
+@DisplayName("BrandApplicationService 단위 테스트")
 class BrandApplicationServiceTest {
 
     @Mock
