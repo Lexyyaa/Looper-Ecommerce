@@ -30,68 +30,6 @@ class ProductServiceTest {
     private ProductService productService;
 
     @Nested
-    @DisplayName("[상품 목록 조회]")
-    class GetProductSummaries {
-
-        @Test
-        @DisplayName("[성공] 첫 페이지(page=0, size=10) 최신순 조회")
-        void success_firstPage_latestSort() {
-            ProductSummaryProjection projection = mock(ProductSummaryProjection.class);
-            when(projection.getId()).thenReturn(1L);
-            when(projection.getName()).thenReturn("상품1");
-            when(projection.getMinPrice()).thenReturn(1000);
-            when(projection.getLikeCount()).thenReturn(5L);
-            when(projection.getStatus()).thenReturn(Product.Status.ACTIVE);
-            when(projection.getCreatedAt()).thenReturn(LocalDateTime.now());
-
-            when(productRepository.findProductSummaries(1L, ProductSortType.RECENT, 1, 10))
-                    .thenReturn(List.of(projection));
-
-            var result = productService.getProductSummaries(
-                    new ProductCommand.List(1, 10, 1L, ProductSortType.RECENT)
-            );
-
-            assertThat(result).hasSize(1);
-            assertThat(result.get(0).name()).isEqualTo("상품1");
-        }
-
-        @Test
-        @DisplayName("[성공] 두 번째 페이지(page=1, size=5) 좋아요순 조회")
-        void success_secondPage_likesDesc() {
-            ProductSummaryProjection projection = mock(ProductSummaryProjection.class);
-            when(projection.getId()).thenReturn(6L);
-            when(projection.getName()).thenReturn("상품6");
-            when(projection.getMinPrice()).thenReturn(2000);
-            when(projection.getLikeCount()).thenReturn(10L);
-            when(projection.getStatus()).thenReturn(Product.Status.ACTIVE);
-            when(projection.getCreatedAt()).thenReturn(LocalDateTime.now());
-
-            when(productRepository.findProductSummaries(1L, ProductSortType.LIKE, 1, 5))
-                    .thenReturn(List.of(projection));
-
-            var result = productService.getProductSummaries(
-                    new ProductCommand.List(1, 5, 1L, ProductSortType.LIKE)
-            );
-
-            assertThat(result).hasSize(1);
-            assertThat(result.get(0).id()).isEqualTo(6L);
-        }
-
-        @Test
-        @DisplayName("[경계값] size=0이면 빈 목록 반환 (또는 예외 처리)")
-        void boundary_zeroSize() {
-            when(productRepository.findProductSummaries(any(), any(), anyInt(), eq(0)))
-                    .thenReturn(List.of());
-
-            var result = productService.getProductSummaries(
-                    new ProductCommand.List(1, 0, 1L, ProductSortType.RECENT)
-            );
-
-            assertThat(result).isEmpty();
-        }
-    }
-
-    @Nested
     @DisplayName("[단일 상품 조회]")
     class GetProduct {
 

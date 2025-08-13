@@ -112,7 +112,7 @@ class UserUnitTest {
                 );
             });
 
-            assertAll( // 이렇게 감싸는거랑 아닌거랑 뭔차이지?
+            assertAll(
                     () -> assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST),
                     () -> assertThat(exception.getMessage()).isEqualTo("성별은 필수값 입니다.")
             );

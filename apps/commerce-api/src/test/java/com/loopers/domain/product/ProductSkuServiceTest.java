@@ -13,13 +13,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("ProductSkuService")
+@DisplayName("ProductSkuService 단위 테스트 ")
 class ProductSkuServiceTest {
 
     @Mock
@@ -37,9 +36,11 @@ class ProductSkuServiceTest {
         void success_decreaseStock() {
             ProductSku sku = ProductSku.builder().id(1L).stockTotal(5).stockReserved(0).build();
 
-            productSkuService.reserveStock(sku, 3);
+            when(productRepository.findByIdWithOptimisticLock(1L)).thenReturn(Optional.of(sku));
 
-            assertEquals(2, sku.avaliableQunatity());
+            productSkuService.reserveStock(sku.getId(), 3);
+
+            assertEquals(2, sku.availableQuantity());
             verify(productRepository).saveProductSku(sku);
         }
 
@@ -53,9 +54,11 @@ class ProductSkuServiceTest {
                     .stockReserved(0)
                     .build();
 
-            productSkuService.reserveStock(sku, 5);
+            when(productRepository.findByIdWithOptimisticLock(1L)).thenReturn(Optional.of(sku));
 
-            assertEquals(0, sku.avaliableQunatity());
+            productSkuService.reserveStock(sku.getId(), 5);
+
+            assertEquals(0, sku.availableQuantity());
             verify(productRepository).saveProductSku(sku);
         }
 
@@ -72,10 +75,21 @@ class ProductSkuServiceTest {
         @Test
         @DisplayName("[실패] 재고 부족 시 BAD_REQUEST 예외가 발생한다.")
         void failure_decreaseStock_insufficientStock() {
-            ProductSku sku = ProductSku.builder().id(1L).stockTotal(2).stockReserved(0).build();
+            ProductSku sku = ProductSku.builder()
+                    .id(1L)
+                    .stockTotal(10)
+                    .stockReserved(10)
+                    .build();
 
-            CoreException ex = assertThrows(CoreException.class, () -> productSkuService.reserveStock(sku, 3));
-            assertThat(ex.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
+            when(productRepository.findByIdWithOptimisticLock(sku.getId()))
+                    .thenReturn(Optional.of(sku));
+
+            CoreException exception = assertThrows(CoreException.class, () ->
+                    productSkuService.reserveStock(sku.getId(), 1)
+            );
+
+            assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
+            verify(productRepository, never()).saveProductSku(any(ProductSku.class));
         }
     }
 }
