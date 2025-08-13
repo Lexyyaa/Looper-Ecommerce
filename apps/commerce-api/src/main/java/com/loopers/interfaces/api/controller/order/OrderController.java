@@ -20,8 +20,9 @@ public class OrderController implements OrderV1ApiSpec {
         OrderCommand.CreateOrder command = new OrderCommand.CreateOrder(
                 loginId,
                 request.items().stream()
-                        .map(i -> new OrderCommand.OrderItemCommand(i.productSkuId(), i.quantity()))
-                        .toList()
+                        .map(item -> new OrderCommand.OrderItemCommand(item.productSkuId(), item.quantity(), item.itemCouponId()))
+                        .toList(),
+                request.cartCouponId()
         );
         var orderInfo = orderUsecase.order(command);
         return ApiResponse.success(OrderV1Response.CreateOrder.from(orderInfo));
