@@ -26,19 +26,36 @@ public class Product extends BaseEntity {
     @Column(name = "brand_id", nullable = false)
     private Long brandId;
 
+    @Column(name = "like_cnt", nullable = false)
+    private Long likeCnt;
+
+    @Column(name = "min_price", nullable = false)
+    private Long minPrice;
+
     public enum Status {
-        ACTIVE, // 판매중
-        INACTIVE, // 판매중지
-        SOLD_OUT, // 완전품절
-        TEMPORARILY_UNAVAILABLE, // 일시품절
+        ACTIVE,
+        INACTIVE,
+        SOLD_OUT,
+        TEMPORARILY_UNAVAILABLE,
     }
 
     public static Product create(String name, Product.Status status, Long brandId) {
+
         return Product.builder()
                 .name(name)
-                .status(Product.Status.ACTIVE)
+                .status(status)
                 .brandId(brandId)
+                .likeCnt(0L)
+                .minPrice(0L)
                 .build();
+    }
+
+    public void updateLikeCnt(Long likeCnt){
+        this.likeCnt = likeCnt;
+    }
+
+    public void updateMinPrice(Long minPrice){
+        this.minPrice = minPrice;
     }
 
     public boolean isAvailable() {

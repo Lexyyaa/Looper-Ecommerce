@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("BrandService")
+@DisplayName("BrandService 단위 테스트")
 class BrandServiceTest {
 
     @Mock

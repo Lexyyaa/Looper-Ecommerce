@@ -7,22 +7,14 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor
+
 @Repository
+@RequiredArgsConstructor
 public class ProductRepositoryImpl implements ProductRepository {
 
     private final ProductJpaRepository productJpaRepository;
     private final ProductSkuJpaRepository productSkuJpaRepository;
 
-    @Override
-    public List<ProductSummaryProjection> findProductSummaries(Long brandId, ProductSortType sortType, int page, int size) {
-        return productJpaRepository.findProductSummaries(
-                brandId,
-                sortType.name(),
-                size,
-                page * size
-        );
-    }
 
     @Override
     public Optional<Product> findBy(Long productId) {

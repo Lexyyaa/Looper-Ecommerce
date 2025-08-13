@@ -36,6 +36,8 @@ class ProductApplicationServiceTest {
     @Mock
     private ProductSkuService productSkuService;
     @Mock
+    private ProductSummaryService productSummaryService;
+    @Mock
     private LikeService likeService;
     @Mock
     private BrandService brandService;
@@ -70,7 +72,7 @@ class ProductApplicationServiceTest {
                     LocalDateTime.now()
             );
 
-            when(productService.getProductSummaries(any()))
+            when(productSummaryService.getProductSummaries(any()))
                     .thenReturn(List.of(summary));
 
             var result = productApplicationService.getProductSummaries(
@@ -80,7 +82,7 @@ class ProductApplicationServiceTest {
             assertThat(result).hasSize(1);
             assertThat(result.get(0).name()).isEqualTo("상품1");
 
-            verify(productService).getProductSummaries(any());
+            verify(productSummaryService).getProductSummaries(any());
         }
 
         static Stream<Arguments> provideInvalidPaging() {
@@ -94,7 +96,7 @@ class ProductApplicationServiceTest {
         @ParameterizedTest(name = "[실패] page={0}, size={1} 인 경우 BAD_REQUEST 발생")
         @MethodSource("provideInvalidPaging")
         void failure_invalidPaging(int page, int size) {
-            when(productService.getProductSummaries(any()))
+            when(productSummaryService.getProductSummaries(any()))
                     .thenThrow(new CoreException(ErrorType.BAD_REQUEST, "잘못된 페이징 요청"));
 
             CoreException ex = assertThrows(CoreException.class, () ->

@@ -47,22 +47,22 @@ public interface LikeJpaRepository extends JpaRepository<Like, Long> {
     );
 
     @Query(value = """
-        SELECT 
-            p.id AS id,
-            p.name AS name,
-            COALESCE(MIN(s.price), 0) AS minPrice,
-            COUNT(l2.id) AS likeCount,
-            p.status AS status,
-            p.created_at AS createdAt
-        FROM Like l
+        SELECT
+            p.id          AS id,
+            p.name        AS name,
+            COALESCE(MIN(s.price), 0)           AS minPrice,
+            COUNT(DISTINCT l2.id)               AS likeCount, 
+            p.status      AS status,
+            p.created_at  AS createdAt
+        FROM `likes` l                                        
         JOIN product p ON p.id = l.target_id
         LEFT JOIN product_sku s ON s.product_id = p.id
-        LEFT JOIN likes l2 ON l2.target_id = p.id AND l2.target_type = 'PRODUCT'
+        LEFT JOIN `likes` l2 ON l2.target_id = p.id AND l2.target_type = 'PRODUCT'
         WHERE l.user_id = :userId
           AND l.target_type = 'PRODUCT'
         GROUP BY p.id, p.name, p.status, p.created_at
-        ORDER BY l.created_at DESC
-        LIMIT :limit OFFSET :offset
+        ORDER BY MAX(l.created_at) DESC  
+        LIMIT :limit OFFSET :offset;
     """, nativeQuery = true)
     List<LikedProductProjection> findLikedProducts(
             @Param("userId") Long userId,

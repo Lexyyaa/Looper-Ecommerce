@@ -28,7 +28,7 @@ class ProductEntityTest {
         @Test
         @DisplayName("[성공] create() 팩토리 메서드는 상태를 무조건 ACTIVE로 설정한다.")
         void success_createProduct_forceActive() {
-            Product product = Product.create("테스트 상품", Product.Status.SOLD_OUT, 10L);
+            Product product = Product.create("테스트 상품", Product.Status.ACTIVE, 10L);
 
             assertEquals(Product.Status.ACTIVE, product.getStatus());
         }

@@ -18,13 +18,13 @@ public class LikeController implements LikeV1ApiSpec {
     private final LikeUsecase likeUsecase;
 
     @PostMapping("/products/{productId}")
-    public ApiResponse<LikeV1Response.Like> likeProduct(
+    public ApiResponse<?> likeProduct(
             @RequestHeader("X-USER-ID") String loginId,
             @PathVariable Long productId
     ) {
         LikeCommand.Like command = LikeCommand.Like.of(loginId, productId, LikeTargetType.PRODUCT);
-        LikeV1Response.Like like = LikeV1Response.Like.from(likeUsecase.like(command));
-        return ApiResponse.success(like);
+        likeUsecase.like(command);
+        return ApiResponse.success();
     }
 
     @DeleteMapping("/products/{productId}")
@@ -37,7 +37,7 @@ public class LikeController implements LikeV1ApiSpec {
         return ApiResponse.success();
     }
 
-    @GetMapping("/{userId}/likes/products")
+    @GetMapping("/{userId}/products")
     public ApiResponse<LikeV1Response.LikedProductList>  getLikedProducts(
             @RequestHeader("X-USER-ID") String loginId,
             @RequestParam(defaultValue = "0") int page,

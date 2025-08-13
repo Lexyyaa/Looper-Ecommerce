@@ -61,8 +61,6 @@ public class LikeApplicationService implements LikeUsecase {
                 ))
                 .toList();
     }
-
-
 }
 
 

@@ -22,7 +22,7 @@ class ProductSkuEntityTest {
         void success_decreaseStock() {
             ProductSku sku = ProductSku.builder().stockTotal(10).stockReserved(0).build();
             sku.reserveStock(3);
-            assertEquals(7, sku.avaliableQunatity());
+            assertEquals(7, sku.availableQuantity());
         }
 
         @Test
@@ -30,7 +30,7 @@ class ProductSkuEntityTest {
         void success_decreaseStock_exact() {
             ProductSku sku = ProductSku.builder().stockTotal(5).stockReserved(0).build();
             sku.reserveStock(5);
-            assertEquals(0, sku.avaliableQunatity());
+            assertEquals(0, sku.availableQuantity());
         }
 
         @Test

@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+
 @SpringBootTest
 @DisplayName("LikeApplicationService 동시성 테스트")
 class LikeConcurrencyTest {

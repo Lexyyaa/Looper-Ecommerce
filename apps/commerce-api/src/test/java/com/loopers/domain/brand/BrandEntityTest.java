@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("Brand Entity")
+@DisplayName("Brand Entity 테스트 ")
 class BrandEntityTest {
 
     @Nested
