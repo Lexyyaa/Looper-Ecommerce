@@ -11,7 +11,7 @@ import java.util.List;
 public interface ProductJpaRepository extends JpaRepository<Product, Long> {
 
     @Query(value = """
-        SELECT 
+        SELECT
             p.id AS id,
             p.name AS name,
             (
@@ -29,10 +29,19 @@ public interface ProductJpaRepository extends JpaRepository<Product, Long> {
         FROM product p
         WHERE p.status = 'ACTIVE'
         AND (:brandId IS NULL OR p.brand_id = :brandId)
-        ORDER BY 
-            CASE WHEN :sort = 'RECENT' THEN p.created_at END DESC,
-            CASE WHEN :sort = 'LOW_PRICE' THEN minPrice END ASC,
-            CASE WHEN :sort = 'LIKE' THEN likeCount END DESC
+        ORDER BY
+            CASE :sort
+                WHEN 'RECENT' THEN p.created_at
+                ELSE NULL
+            END DESC,
+            CASE :sort
+                WHEN 'LOW_PRICE' THEN minPrice
+                ELSE NULL
+            END ASC,
+            CASE :sort
+                WHEN 'LIKE' THEN likeCount
+                ELSE NULL
+            END DESC
         LIMIT :limit OFFSET :offset
         """, nativeQuery = true)
     List<ProductSummaryProjection> findProductSummaries(

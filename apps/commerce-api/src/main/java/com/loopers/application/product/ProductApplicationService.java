@@ -5,6 +5,7 @@ import com.loopers.domain.like.LikeService;
 import com.loopers.domain.like.LikeTargetType;
 import com.loopers.domain.product.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,13 +17,14 @@ public class ProductApplicationService implements ProductUsecase {
 
     private final ProductService productService;
     private final ProductSkuService productSkuService;
+    private final ProductSummaryService productSummaryService;
     private final LikeService likeService;
     private final BrandService brandService;
 
     @Override
     @Transactional(readOnly = true)
     public List<ProductInfo.Summary> getProductSummaries(ProductCommand.List command) {
-        return productService.getProductSummaries(command).stream()
+        return productSummaryService.getProductSummaries(command).stream()
                 .map(ProductInfo.Summary::from)
                 .toList();
     }

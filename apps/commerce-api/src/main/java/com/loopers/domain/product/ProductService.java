@@ -3,6 +3,7 @@ package com.loopers.domain.product;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,26 +13,6 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
-
-    public List<ProductSummary> getProductSummaries(ProductCommand.List command) {
-        List<ProductSummaryProjection> projections = productRepository.findProductSummaries(
-                command.brandId(),
-                command.sortType(),
-                command.page(),
-                command.size()
-        );
-
-        return projections.stream()
-                .map(p -> new ProductSummary(
-                        p.getId(),
-                        p.getName(),
-                        p.getMinPrice(),
-                        p.getLikeCount(),
-                        p.getStatus(),
-                        p.getCreatedAt()
-                ))
-                .toList();
-    }
 
     public Product getProduct(Long productId) {
         Product product = productRepository.findBy(productId)

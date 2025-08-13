@@ -42,14 +42,15 @@ public abstract class BaseEntity {
         guard();
 
         ZonedDateTime now = ZonedDateTime.now();
-        this.createdAt = now;
+        if (this.createdAt == null) { // 값이 없을 때만 현재 시간 세팅
+            this.createdAt = ZonedDateTime.now();
+        }
         this.updatedAt = now;
     }
 
     @PreUpdate
     private void preUpdate() {
         guard();
-
         this.updatedAt = ZonedDateTime.now();
     }
 
