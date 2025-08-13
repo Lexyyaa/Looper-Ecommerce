@@ -37,7 +37,7 @@ public class OrderApplicationService implements OrderUsecase {
 
         for (OrderCommand.OrderItemCommand itemCommand : command.items()) {
             ProductSku sku = productSkuService.getBySkuIdWithLock(itemCommand.productSkuId());
-            productSkuService.reserveStock(sku, itemCommand.quantity());
+            productSkuService.reserveStock(sku.getId(), itemCommand.quantity());
             initialPrice = initialPrice.add(BigDecimal.valueOf(sku.getPrice()).multiply(BigDecimal.valueOf(itemCommand.quantity())));
             order.addOrderItem(OrderItem.create(itemCommand.productSkuId(), itemCommand.quantity()));
         }

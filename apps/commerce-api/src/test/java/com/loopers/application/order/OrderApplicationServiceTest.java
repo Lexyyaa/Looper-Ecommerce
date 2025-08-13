@@ -68,7 +68,7 @@ class OrderApplicationServiceTest {
             var result = orderApplicationService.order(cmd);
 
             assertThat(result.price()).isEqualTo(2000L);
-            verify(productSkuService).reserveStock(sku, 2);
+            verify(productSkuService).reserveStock(sku.getId(), 2);
         }
 
         @Test
@@ -120,7 +120,7 @@ class OrderApplicationServiceTest {
             when(userService.getUser("loginId")).thenReturn(user);
             when(productSkuService.getBySkuId(10L)).thenReturn(sku);
             doThrow(new CoreException(ErrorType.BAD_REQUEST, "재고 부족"))
-                    .when(productSkuService).reserveStock(sku, 5);
+                    .when(productSkuService).reserveStock(sku.getId(), 5);
 
             CoreException ex = assertThrows(CoreException.class,
                     () -> orderApplicationService.order(cmd));

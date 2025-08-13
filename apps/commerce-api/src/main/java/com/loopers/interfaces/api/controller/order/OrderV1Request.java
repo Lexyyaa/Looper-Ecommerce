@@ -6,13 +6,15 @@ public class OrderV1Request {
 
     public record CreateOrder(
             String loginId,
-            List<OrderItem> items
+            List<OrderItemRequest> items,
+            Long cartCouponId
     ) {
 
     }
-    public record OrderItem(
+    public record OrderItemRequest(
             Long productSkuId,
-            int quantity
+            int quantity,
+            Long itemCouponId
     ) {
     }
 
