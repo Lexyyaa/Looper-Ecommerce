@@ -22,7 +22,7 @@ public class LikeValidator {
         boolean exists = likeRepository.findLike(userId, targetId, targetType).isPresent();
 
         if (!exists) {
-            throw new CoreException(ErrorType.BAD_REQUEST,"해당 좋아요가 존재하지 않습니다. ");
+            throw new CoreException(ErrorType.NOT_FOUND,"해당 좋아요가 존재하지 않습니다. ");
         }
     }
 }

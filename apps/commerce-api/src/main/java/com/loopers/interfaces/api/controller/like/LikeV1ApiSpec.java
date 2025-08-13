@@ -13,7 +13,7 @@ public interface LikeV1ApiSpec {
             summary = "좋아요 등록",
             description = "사용자는 상품에 좋아요를 등록할 수 있다."
     )
-    ApiResponse<LikeV1Response.Like> likeProduct(
+    ApiResponse<?> likeProduct(
             @Schema(name = "사용자정보", description = "사용자정보")
             @RequestHeader("X-USER-ID") String loginId,
             @Schema(name = "상품정보", description = "상품ID")
