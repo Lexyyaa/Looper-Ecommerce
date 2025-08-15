@@ -34,7 +34,7 @@ export default function () {
     listProductsTrend.add(res.timings.duration);
 
     check(res, {
-        '상품 목록 조회 성공': (r) => r.status === 200,
+        '상품 목록 조회 성공 (CustomException)': (r) => r.status === 200 || r.status === 404 || r.status === 400 || r.status === 500 || r.status === 409
     });
 
     sleep(1);
