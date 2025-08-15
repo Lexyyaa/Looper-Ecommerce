@@ -29,7 +29,8 @@ public class ProductController {
 
     @GetMapping("/{productId}")
     public ApiResponse<ProductV1Response.Detail> getProductDetail(@PathVariable Long productId) {
-        ProductInfo.Detail detail = productUsecase.getProductDetail(productId);
+//        ProductInfo.Detail detail = productUsecase.getProductDetail(productId);
+        ProductInfo.Detail detail = productUsecase.getProductDetailWithCacheable(productId);
         return ApiResponse.success(ProductV1Response.Detail.from(detail));
     }
 }

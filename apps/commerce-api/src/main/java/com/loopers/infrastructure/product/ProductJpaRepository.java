@@ -14,6 +14,39 @@ public interface ProductJpaRepository extends JpaRepository<Product, Long> {
         SELECT
             p.id AS id,
             p.name AS name,
+            p.min_price as minPrice,
+            p.like_Cnt AS likeCount,
+            p.status AS status,
+            p.created_at AS createdAt
+        FROM product p
+        WHERE p.status = 'ACTIVE'
+        AND (:brandId IS NULL OR p.brand_id = :brandId)
+        ORDER BY
+            CASE :sort
+                WHEN 'RECENT' THEN p.created_at
+                ELSE NULL
+            END DESC,
+            CASE :sort
+                WHEN 'LOW_PRICE' THEN minPrice
+                ELSE NULL
+            END ASC,
+            CASE :sort
+                WHEN 'LIKE' THEN likeCount
+                ELSE NULL
+            END DESC
+        LIMIT :limit OFFSET :offset
+        """, nativeQuery = true)
+    List<ProductSummaryProjection> findProductSummary(
+            @Param("brandId") Long brandId,
+            @Param("sort") String sort,
+            @Param("limit") int limit,
+            @Param("offset") int offset
+    );
+
+    @Query(value = """
+        SELECT
+            p.id AS id,
+            p.name AS name,
             (
                 SELECT MIN(s.price)
                 FROM product_sku s

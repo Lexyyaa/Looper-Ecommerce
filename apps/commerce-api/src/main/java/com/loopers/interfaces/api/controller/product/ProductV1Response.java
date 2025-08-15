@@ -43,7 +43,8 @@ public class ProductV1Response {
             Product.Status status,
             Long brandId,
             String brandName,
-            long likeCount,
+            Long minPrice,
+            Long likeCount,
             List<Sku> skus
     ) {
         public static Detail from(ProductInfo.Detail info) {
@@ -53,6 +54,7 @@ public class ProductV1Response {
                     info.status(),
                     info.brandId(),
                     info.brandName(),
+                    info.minPrice(),
                     info.likeCount(),
                     info.skus().stream().map(Sku::from).toList()
             );
