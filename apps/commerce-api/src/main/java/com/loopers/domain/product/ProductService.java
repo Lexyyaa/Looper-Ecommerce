@@ -3,8 +3,8 @@ package com.loopers.domain.product;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,6 +24,7 @@ public class ProductService {
         return product;
     }
 
+    @Transactional
     public void updateStatus(boolean isAllSoldOut, Long productId) {
         if (!isAllSoldOut) return;
 
@@ -33,4 +34,15 @@ public class ProductService {
         product.changeStatus(Product.Status.SOLD_OUT);
         productRepository.saveProduct(product);
     }
+
+    public Product saveProduct(Product product, Long minPrice) {
+        product.updateMinPrice(minPrice);
+        return productRepository.saveProduct(product);
+    }
+
+    public Product updateLikeCnt(Product product, Long likeCnt) {
+        product.updateLikeCnt(likeCnt);
+        return productRepository.saveProduct(product);
+    }
+
 }
