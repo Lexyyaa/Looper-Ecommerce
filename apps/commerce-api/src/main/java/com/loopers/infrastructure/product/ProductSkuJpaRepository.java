@@ -27,6 +27,8 @@ public interface ProductSkuJpaRepository extends JpaRepository<ProductSku, Long>
     """)
     boolean existsAvailableStock(@Param("productId") Long productId);
 
+    @Query("SELECT MIN(ps.price) FROM ProductSku ps WHERE ps.product.id = :productId")
+    Long findMinPriceByProductId(@Param("productId") Long productId);
 }
 
 

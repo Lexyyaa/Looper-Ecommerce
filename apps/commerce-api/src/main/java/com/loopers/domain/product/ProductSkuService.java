@@ -51,4 +51,15 @@ public class ProductSkuService {
     public boolean isAllSoldOut(Long productId) {
         return !productRepository.existsAvailableStock(productId);
     }
+
+    public Long getMinPrice(Long productId) {
+        return productRepository.getMinPrice(productId);
+    }
+
+    public List<ProductSku> saveProductSkus(Product product, ProductCommand.Update command) {
+        List<ProductSku> newSkus = command.to(product);
+
+        List<ProductSku> savedSkus = productRepository.saveAllProductSku(newSkus);
+        return savedSkus;
+    }
 }

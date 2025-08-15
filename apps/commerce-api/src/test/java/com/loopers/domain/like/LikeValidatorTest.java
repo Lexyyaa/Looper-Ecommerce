@@ -72,7 +72,7 @@ class LikeValidatorTest {
             CoreException ex = assertThrows(CoreException.class,
                     () -> likeValidator.validateExists(1L, 100L, LikeTargetType.PRODUCT));
 
-            assertThat(ex.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
+            assertThat(ex.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
         }
     }
 }

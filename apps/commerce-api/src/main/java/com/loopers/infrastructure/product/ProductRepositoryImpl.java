@@ -57,4 +57,14 @@ public class ProductRepositoryImpl implements ProductRepository {
     public Optional<ProductSku> findByIdWithOptimisticLock(Long skuId) {
         return productSkuJpaRepository.findByIdWithOptimisticLock(skuId);
     }
+
+    @Override
+    public Long getMinPrice(Long productId) {
+        return productSkuJpaRepository.findMinPriceByProductId(productId);
+    }
+
+    @Override
+    public List<ProductSku> saveAllProductSku(List<ProductSku> productSkus) {
+        return productSkuJpaRepository.saveAll(productSkus);
+    }
 }

@@ -31,17 +31,32 @@ public class ProductInfo {
             Product.Status status,
             Long brandId,
             String brandName,
-            long likeCount,
+            Long minPrice,
+            Long likeCount,
             List<Sku> skus
     ) {
-        public static Detail from(Product product, String brandName, List<ProductSku> skus, long likeCount) {
+        public static Detail from(Product product, String brandName, List<ProductSku> skus, Long minPrice, Long likeCount) {
             return new Detail(
                     product.getId(),
                     product.getName(),
                     product.getStatus(),
                     product.getBrandId(),
                     brandName,
+                    minPrice,
                     likeCount,
+                    skus.stream().map(Sku::from).toList()
+            );
+        }
+
+        public static Detail fromProduct(Product product,String brandName, List<ProductSku> skus) {
+            return new Detail(
+                    product.getId(),
+                    product.getName(),
+                    product.getStatus(),
+                    product.getBrandId(),
+                    brandName,
+                    product.getMinPrice(),
+                    product.getLikeCnt(),
                     skus.stream().map(Sku::from).toList()
             );
         }
@@ -61,6 +76,26 @@ public class ProductInfo {
                     sku.getPrice(),
                     sku.getStockTotal(),
                     sku.getStockReserved()
+            );
+        }
+    }
+
+    public record Item(
+            Long id,
+            String name,
+            Product.Status status,
+            Long minPrice,
+            Long likeCount,
+            List<Sku> skus
+    ) {
+        public static Item from(Product product, List<ProductSku> skus) {
+            return new Item(
+                    product.getId(),
+                    product.getName(),
+                    product.getStatus(),
+                    product.getMinPrice(),
+                    product.getLikeCnt(),
+                    skus.stream().map(Sku::from).toList()
             );
         }
     }

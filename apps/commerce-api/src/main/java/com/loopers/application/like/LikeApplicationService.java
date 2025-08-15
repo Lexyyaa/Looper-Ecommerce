@@ -6,11 +6,13 @@ import com.loopers.domain.product.ProductService;
 import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class LikeApplicationService implements LikeUsecase {
@@ -27,6 +29,8 @@ public class LikeApplicationService implements LikeUsecase {
         Product product = productService.getProduct(command.targetId());
         likeValidator.validateNotExists(user.getId(), product.getId(), command.targetType());
         likeService.save(user.getId(), product.getId(), command.targetType());
+        Long likeCnt = likeService.getLikeCount(product.getId(), command.targetType());
+        productService.updateLikeCnt(product,likeCnt);
     }
 
     @Override
@@ -36,6 +40,9 @@ public class LikeApplicationService implements LikeUsecase {
         Product product = productService.getProduct(command.targetId());
         likeValidator.validateExists(user.getId(), product.getId(), command.targetType());
         likeService.delete(user.getId(), product.getId(), command.targetType());
+        Long likeCnt = likeService.getLikeCount(product.getId(), command.targetType());
+        log.info("likeCnt = {}",likeCnt);
+        productService.updateLikeCnt(product,likeCnt);
     }
 
     @Override

@@ -16,6 +16,9 @@ public class ProductOptionValue extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "product_id", nullable = false)
+    private Long productId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "option_id")
     private ProductOption option;
@@ -30,4 +33,3 @@ public class ProductOptionValue extends BaseEntity {
                 .build();
     }
 }
-
