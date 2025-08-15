@@ -98,7 +98,7 @@ class LikeApplicationServiceIntegrationTest {
                 () -> likeApplicationService.unlike(
                         new LikeCommand.Like(loginId, activeProductId, LikeTargetType.PRODUCT)));
 
-        assertThat(ex.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
+        assertThat(ex.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
     }
 
     @Test
