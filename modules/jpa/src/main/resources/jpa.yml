@@ -96,3 +96,13 @@ datasource:
       jdbc-url: jdbc:mysql://localhost:3306/loopers
       username: application
       password: application
+
+---
+spring.config.activate.on-profile: docker
+
+
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
