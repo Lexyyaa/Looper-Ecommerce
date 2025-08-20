@@ -24,6 +24,11 @@ spring:
       - logging.yml
       - monitoring.yml
 
+datasource:
+  mysql-jpa:
+    main:
+      jdbc-url: jdbc:mysql://localhost:3306/paymentgateway
+
 springdoc:
   use-fqn: true
   swagger-ui:
@@ -35,11 +40,25 @@ spring:
     activate:
       on-profile: local, test
 
+server:
+  port: 8082
+
+management:
+  server:
+    port: 8083
+
 ---
 spring:
   config:
     activate:
       on-profile: dev
+
+server:
+  port: 8082
+
+management:
+  server:
+    port: 8083
 
 ---
 spring:
@@ -56,15 +75,16 @@ spring:
 springdoc:
   api-docs:
     enabled: false
+
 ---
 spring.config.activate.on-profile: docker
 
 datasource:
   mysql-jpa:
     main:
-      jdbc-url: jdbc:mysql://mysql:3306/loopers
-      username: application
-      password: application
+      jdbc-url: jdbc:mysql://mysql:3306/paymentgateway
+      username: paymentuser
+      password: paymentuser
 
   redis:
     master:
