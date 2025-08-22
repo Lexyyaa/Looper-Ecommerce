@@ -7,9 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "결제", description = "결제 생성 및 취소 관련 API")
 public interface PaymentV1ApiSpec {
@@ -18,7 +16,7 @@ public interface PaymentV1ApiSpec {
             summary = "결제 생성",
             description = "특정 주문에 대한 결제 정보를 생성합니다."
     )
-    @PostMapping("/api/v1/orders/{orderId}/payments")
+
     ApiResponse<PaymentV1Response.CreatePayment> createPayment(
             @Parameter(name = "orderId", description = "결제할 주문의 고유 ID")
             @PathVariable Long orderId,
@@ -33,7 +31,6 @@ public interface PaymentV1ApiSpec {
             summary = "결제 취소",
             description = "특정 결제 건을 취소합니다. 결제 취소 시 해당 주문의 상태가 변경될 수 있습니다."
     )
-    @DeleteMapping("/api/v1/orders/{orderId}/payments/{paymentId}")
     ApiResponse<PaymentV1Response.CancelPayment> cancelPayment(
             @Parameter(name = "orderId", description = "취소할 결제 건이 속한 주문의 고유 ID")
             @PathVariable Long orderId,

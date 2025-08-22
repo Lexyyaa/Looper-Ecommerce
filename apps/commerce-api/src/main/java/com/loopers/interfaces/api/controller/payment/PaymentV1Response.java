@@ -13,7 +13,9 @@ public class PaymentV1Response {
             Long amount,
             Payment.Method method,
             Payment.Status status,
-            ZonedDateTime createdAt
+            String idempotencyKey,
+            String transactionKey,
+            ZonedDateTime updatedAt
     ) {
         public static CreatePayment from(PaymentInfo.CreatePayment info) {
             return new CreatePayment(
@@ -23,7 +25,9 @@ public class PaymentV1Response {
                     info.amount(),
                     info.method(),
                     info.status(),
-                    info.createdAt()
+                    info.idempotencyKey(),
+                    info.transactionKey(),
+                    info.updatedAt()
             );
         }
     }
