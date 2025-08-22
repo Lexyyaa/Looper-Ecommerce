@@ -25,7 +25,6 @@ public class PgFeignConfig {
         return (methodKey, response) -> {
             int status = response.status();
 
-            // 짧은 오류 메시지용 바디 추출(최대 200자)
             String body = "";
             try {
                 if (response.body() != null) {
@@ -34,9 +33,7 @@ public class PgFeignConfig {
                 }
             } catch (IOException ignored) {}
 
-            // 408/429/5xx → 재시도 대상(RetryableException)로 표준화
             if (status == 408 || status == 429 || status >= 500) {
-                // (옵션) Retry-After 헤더가 "초" 숫자면 힌트로 반영
                 Date retryAfter = null;
                 if (response.headers() != null) {
                     Collection<String> vals = response.headers().get("Retry-After");
@@ -53,45 +50,7 @@ public class PgFeignConfig {
                 return new RetryableException(status, msg, method, retryAfter, req);
             }
 
-            // 그 외(주로 4xx)는 기본 Feign 예외 → 재시도 제외(Resilience4j에서 ignore)
             return feign.FeignException.errorStatus(methodKey, response);
         };
     }
-
-
-//    @Bean
-//    public ErrorDecoder pgErrorDecoder() {
-//        return (methodKey, response) -> {
-//            int status = response.status();
-//
-//            String body = "";
-//            try {
-//                if (response.body() != null) {
-//                    body = new String(response.body().asInputStream().readAllBytes(), StandardCharsets.UTF_8);
-//                    if (body.length() > 500) body = body.substring(0, 500) + " …";
-//                }
-//            } catch (IOException ignored) { }
-//
-//            if (status == 408 || status == 429 || status >= 500) {
-//                Date retryAfter = null;
-//                List<String> vals = response.headers() != null ? response.headers().get("Retry-After") : null;
-//                if (vals != null && !vals.isEmpty()) {
-//                    String v = vals.get(0);
-//                    if (v != null && v.matches("\\d+")) {
-//                        retryAfter = new Date(System.currentTimeMillis() + Long.parseLong(v) * 1000L);
-//                    }
-//                }
-//                Request req = response.request();
-//                return new RetryableException(
-//                        status,
-//                        "PG " + status + (body.isEmpty() ? "" : " " + body),
-//                        req != null ? req.httpMethod() : null,
-//                        retryAfter,
-//                        req
-//                );
-//            }
-//
-//            return FeignException.errorStatus(methodKey, response);
-//        };
-//    }
 }

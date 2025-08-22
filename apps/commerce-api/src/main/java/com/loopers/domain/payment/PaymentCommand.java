@@ -11,7 +11,6 @@ public class PaymentCommand {
             Long orderId,
             Long amount,
             Payment.Method method,
-            String idempotencyKey,
             CardPaymentDetails details
     ) {
         public static CreatePayment create(
@@ -23,7 +22,6 @@ public class PaymentCommand {
                     orderId,
                     request.amount(),
                     request.method(),
-                    request.idempotencyKey(),
                     new CardPaymentDetails(
                             request.details().cardType(),
                             request.details().cardNo()

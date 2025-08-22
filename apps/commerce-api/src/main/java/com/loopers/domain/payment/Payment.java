@@ -26,7 +26,7 @@ public class Payment extends BaseEntity {
     @Column(name = "order_id", nullable = false, updatable = false)
     private Long orderId;
 
-    @Column(nullable = false)
+    @Column(nullable = true, updatable = false)
     private String txKey;
 
     @Column(nullable = false, length = 64)

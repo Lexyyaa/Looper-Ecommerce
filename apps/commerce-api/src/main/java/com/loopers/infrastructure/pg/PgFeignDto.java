@@ -6,14 +6,14 @@ import com.loopers.domain.paymentgateway.PaymentGatewayResponse;
 
 public class PgFeignDto {
 
-    record PgPayRequest(String orderId, String cardType, String cardNo,
+    public record PgPayRequest(String orderId, String cardType, String cardNo,
                         String amount, String callbackUrl, String idempotencyKey) {}
 
-    record PgPayResponse(Meta meta, Data data) {
+    public record PgPayResponse(Meta meta, Data data) {
 
-        record Meta(String result) {}
+        public record Meta(String result) {}
 
-        record Data(String transactionKey, String status, String reason) {
+        public record Data(String transactionKey, String status, String reason) {
         }
         public static PaymentGatewayResponse toResponse(PgPayResponse res) {
             if (res == null) return new PaymentGatewayResponse(null, null, null);
@@ -26,11 +26,11 @@ public class PgFeignDto {
         }
     }
 
-    record PgPayDetail(Meta meta, Data data) {
+    public record PgPayDetail(Meta meta, Data data) {
 
-        record Meta(String result) {}
+        public record Meta(String result) {}
 
-        record Data(
+        public record Data(
                 String transactionKey,
                 String orderId,
                 String cardType,

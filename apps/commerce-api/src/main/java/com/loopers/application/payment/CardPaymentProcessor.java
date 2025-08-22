@@ -64,9 +64,10 @@ public class CardPaymentProcessor implements PaymentProcessor {
         Payment requested = null;
         if (res.txKey() != null) {
             requested = paymentService.bindTxKeyOnPending(payment, res.txKey());
+            return requested;
+        }else{
+            return payment;
         }
-
-        return requested;
     }
 
     @Retry(name = "pg-request")
