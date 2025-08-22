@@ -17,4 +17,20 @@ dependencies {
     // test-fixtures
     testImplementation(testFixtures(project(":modules:jpa")))
     testImplementation(testFixtures(project(":modules:redis")))
+
+
+    // feign
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+
+    // Resilience4j
+    implementation(platform("io.github.resilience4j:resilience4j-bom:2.2.0"))
+    implementation("io.github.resilience4j:resilience4j-spring-boot3")
+    implementation("io.github.resilience4j:resilience4j-circuitbreaker")
+    implementation("io.github.resilience4j:resilience4j-retry")
+    implementation("io.github.resilience4j:resilience4j-ratelimiter")
+    implementation("io.github.resilience4j:resilience4j-bulkhead")
+    implementation("io.github.resilience4j:resilience4j-timelimiter")
+
 }
