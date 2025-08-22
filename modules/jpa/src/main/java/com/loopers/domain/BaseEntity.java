@@ -62,4 +62,10 @@ public abstract class BaseEntity {
             this.deletedAt = ZonedDateTime.now();
         }
     }
+
+    public void updateDate() {
+        if (this.updatedAt == null) {
+            this.updatedAt = ZonedDateTime.now();
+        }
+    }
 }
