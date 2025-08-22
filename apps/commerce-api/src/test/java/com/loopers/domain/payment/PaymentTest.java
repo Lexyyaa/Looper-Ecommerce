@@ -6,6 +6,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -34,7 +37,7 @@ class PaymentTest {
             p.pay(p.getUserId());
             p.cancel(p.getUserId());
 
-            assertThat(p.getStatus()).isEqualTo(Payment.Status.CANCELLED);
+            assertThat(p.getStatus()).isEqualTo(Payment.Status.CANCELED);
         }
 
         @Test
@@ -48,5 +51,17 @@ class PaymentTest {
                     () -> p.cancel(p.getUserId()));
             assertThat(ex.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
         }
+    }
+
+    @Test
+    @DisplayName("generateIdemKey(): 1000개 생성해도 중복 없고 12자리 대문자/숫자")
+    void success_generateIdemKey() {
+        Set<String> set = new HashSet<>();
+        for (int i = 0; i < 1000; i++) {
+            String key = Payment.generateIdemKey();
+            assertThat(key).matches("[A-Z0-9]{12}");
+            set.add(key);
+        }
+        assertThat(set).hasSize(1000);
     }
 }
