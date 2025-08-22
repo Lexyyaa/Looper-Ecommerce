@@ -36,7 +36,7 @@ public class PointPaymentProcessor implements PaymentProcessor {
     }
 
     @Override
-    @Transactional
+    @Transactional // 별도의 재시도는 없음, DB Timeout 정도만 관리.
     public Payment pay(User user, Order order, PaymentCommand.CreatePayment command) {
         Payment saved = null;
 

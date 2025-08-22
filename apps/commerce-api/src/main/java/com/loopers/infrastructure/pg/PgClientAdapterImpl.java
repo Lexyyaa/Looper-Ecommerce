@@ -48,6 +48,7 @@ public class PgClientAdapterImpl implements PgClientAdapter {
         return PgFeignDto.PgPayDetail.toResponse(res);
     }
 
+    // read 적용
     @Override
     @Retry(name = "pg-read", fallbackMethod = "returnEmptyObject")
     public Optional<PaymentDetail> findSingleSuccessPayment(String orderId) {

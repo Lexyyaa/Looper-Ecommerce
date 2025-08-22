@@ -36,11 +36,13 @@ public class CardPaymentProcessor implements PaymentProcessor {
         return Payment.Method.CARD;
     }
 
+    // request 적용
     @Retry(name = "pg-request")
-    @RateLimiter(name = "pg-request", fallbackMethod = "fallbackPending")
+    @RateLimiter(name = "pg-request")
     @CircuitBreaker(name = "pg-request", fallbackMethod = "fallbackPending")
     public Payment pay(User user, Order order,PaymentCommand.CreatePayment command) {
 
+        //결제 생성
         Payment payment = paymentService.createPending(
                 user.getId(),
                 order.getId(),
