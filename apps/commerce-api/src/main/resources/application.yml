@@ -35,6 +35,12 @@ spring:
     activate:
       on-profile: local, test
 
+pg:
+  userid: songcommerce
+  callback:
+    base-url: http://localhost:8080/api/v1
+    transaction-path: /pg/callback
+
 ---
 spring:
   config:
@@ -73,3 +79,60 @@ datasource:
     replicas:
       - host: redis-readonly
         port: 6379
+
+
+feign:
+  client:
+    config:
+      pgClient:
+        connectTimeout: 500
+        readTimeout: 1000
+
+resilience4j:
+  retry:
+    instances:
+      pg-request: # 결제요청(쓰기)
+        max-attempts: 3
+        wait-duration: 200ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2.0
+        enable-randomized-wait: true
+        fail-after-max-attempts: true
+        retry-exceptions:
+          - feign.RetryableException
+          - java.net.SocketTimeoutException
+        ignore-exceptions:
+          - feign.FeignException
+
+      pg-read: # 상태조회(읽기
+        max-attempts: 2
+        wait-duration: 150ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2.0
+        enable-randomized-wait: true
+        fail-after-max-attempts: true
+        retry-exceptions:
+          - feign.RetryableException
+          - java.net.SocketTimeoutException
+        ignore-exceptions:
+          - feign.FeignException
+
+  circuitbreaker:
+    instances:
+      pg-request:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 20
+        failure-rate-threshold: 50
+        slow-call-duration-threshold: 800ms
+        slow-call-rate-threshold: 60
+        permitted-number-of-calls-in-half-open-state: 3
+        minimum-number-of-calls: 10
+        wait-duration-in-open-state: 5s
+
+  ratelimiter:
+    instances:
+      pg-request:
+        limit-for-period: 20
+        limit-refresh-period: 1s
+        timeout-duration: 100ms
+
