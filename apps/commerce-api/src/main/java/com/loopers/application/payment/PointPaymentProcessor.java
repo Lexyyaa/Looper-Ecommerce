@@ -36,7 +36,7 @@ public class PointPaymentProcessor implements PaymentProcessor {
     }
 
     @Override
-    @Transactional // 포인트결제는 리트라이는 하지않아도된다고판단ㄱㄱ
+    @Transactional
     public Payment pay(User user, Order order, PaymentCommand.CreatePayment command) {
         Payment saved = null;
 
@@ -63,39 +63,3 @@ public class PointPaymentProcessor implements PaymentProcessor {
         return saved;
     }
 }
-/**
- 중요!: PointPaymentProcessor에서 결제가 실패하면 RuntimeException을 던져야 합니다.
- 이렇게 하면 PaymentApplicationService의 메인 트랜잭션이 롤백되어,
- 함께 시도된 카드 결제 건(상태: PENDING)도 DB에 저장되지 않게 됩니다.
- 즉, 포인트가 부족하면 카드 결제 시도 자체를 막을 수 있습니다.
- */
-
-//@Embeddable
-//public record OrderNumber(String number) {
-//
-//    private static final String PREFIX = "29CART-";
-//
-//    public static OrderNumber initialize() {
-//        String uuid = UUID.randomUUID()
-//                .toString()
-//                .replace("-", "")
-//                .substring(0, 12)
-//                .toUpperCase();
-//        return new OrderNumber(PREFIX + uuid);
-//    }
-//}
-//
-//@Entity
-//@NoArgsConstructor(access = AccessLevel.PROTECTED)
-//public class User extends BaseEntity {
-//
-//    @NaturalId
-//    @AttributeOverride(
-//            name = "value",
-//            column = @Column(
-//                    name = "account_id",
-//                    nullable = false,
-//                    unique = true
-//            )
-//    )
-//    private AccountId accountId;
