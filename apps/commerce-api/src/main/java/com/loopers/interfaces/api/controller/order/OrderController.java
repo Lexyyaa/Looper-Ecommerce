@@ -16,7 +16,10 @@ public class OrderController implements OrderV1ApiSpec {
     private final OrderUsecase orderUsecase;
 
     @PostMapping
-    public ApiResponse<OrderV1Response.CreateOrder> createOrder(@RequestHeader("X-USER-ID") String loginId, @RequestBody OrderV1Request.CreateOrder request) {
+    public ApiResponse<OrderV1Response.CreateOrder> createOrder(
+            @RequestHeader("X-USER-ID") String loginId,
+            @RequestBody OrderV1Request.CreateOrder request
+    ) {
         OrderCommand.CreateOrder command = new OrderCommand.CreateOrder(
                 loginId,
                 request.items().stream()

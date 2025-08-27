@@ -7,6 +7,7 @@ import com.loopers.support.error.ErrorType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +51,29 @@ public class Order extends BaseEntity {
     @Builder.Default
     private List<CouponUsage> couponUsages = new ArrayList<>();
 
+    public static BigDecimal getInitialTotalPrice(int skuPrice, int skuQuantity) {
+        return BigDecimal.valueOf(skuPrice).multiply(BigDecimal.valueOf(skuQuantity));
+    }
+
+    public void updatePrice(Long amount) {
+        if(amount < 1){
+            throw new CoreException(ErrorType.BAD_REQUEST, "금액은 1원 이상이어야 합니다.");
+        }
+        this.price = amount;
+    }
+
+    public void validateCancelable(Long userId){
+        if (!this.userId.equals(userId)) {
+            throw new CoreException(ErrorType.BAD_REQUEST,"본인의 주문만 취소할 수 있습니다.");
+        }
+        if (this.status == Order.Status.CANCELED) {
+            throw new CoreException(ErrorType.BAD_REQUEST,"이미 취소된 주문입니다.");
+        }
+        if (this.status == Order.Status.CONFIRMED) {
+            throw new CoreException(ErrorType.BAD_REQUEST,"결제 완료된 주문은 취소할 수 없습니다.");
+        }
+    }
+
     public void addCouponUsage(CouponUsage usage) {
         if (!this.couponUsages.contains(usage)) {
             this.couponUsages.add(usage);
@@ -66,15 +90,15 @@ public class Order extends BaseEntity {
         this.price += amount;
     }
 
-    public void updatePrice(Long amount) {
-        if(amount < 1){
-            throw new CoreException(ErrorType.BAD_REQUEST, "금액은 1원 이상이어야 합니다.");
-        }
-        this.price = amount;
-    }
 
     public void updateFinalPrice(Long newFinalPrice) {
         this.finalPrice = newFinalPrice;
+    }
+
+    public void isPending(){
+        if(this.status == Status.PENDING){
+            throw new CoreException(ErrorType.BAD_REQUEST,"이미 처리된 주문 입니다.");
+        }
     }
 
     public void cancel() {
@@ -82,12 +106,6 @@ public class Order extends BaseEntity {
             throw new CoreException(ErrorType.BAD_REQUEST,"이미 취소된 주문입니다.");
         }
         this.status = Status.CANCELED;
-    }
-
-    public void isConfirmed() {
-        if (this.status == Status.CONFIRMED) {
-            throw new CoreException(ErrorType.BAD_REQUEST,"이미 결제된 주문입니다.");
-        }
     }
 
     public void confirm() {
