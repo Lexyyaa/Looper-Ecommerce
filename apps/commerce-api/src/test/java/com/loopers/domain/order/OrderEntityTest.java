@@ -1,5 +1,6 @@
 package com.loopers.domain.order;
 
+import com.loopers.support.error.CoreException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,7 @@ class OrderEntityTest {
         void failure_cancelAlreadyCancelled() {
             Order order = Order.create(1L, 1000L);
             order.cancel();
-            assertThrows(IllegalStateException.class, order::cancel);
+            assertThrows(CoreException.class, order::cancel);
         }
     }
 
@@ -73,7 +74,7 @@ class OrderEntityTest {
         void failure_confirmAlreadyConfirmed() {
             Order order = Order.create(1L, 1000L);
             order.confirm();
-            assertThrows(IllegalStateException.class, order::confirm);
+            assertThrows(CoreException.class, order::confirm);
         }
     }
 }

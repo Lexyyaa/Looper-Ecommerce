@@ -31,23 +31,31 @@ public class OrderApplicationService implements OrderUsecase {
 
         User user = userService.getUser(command.loginId());
 
-        // 주문 생성 및 주문 총액 계산
+        // 주문 생성 및 주문 총액 계산 (PENDING 으로 생성)
         Order order = Order.create(user.getId(),0L);
         BigDecimal initialPrice = BigDecimal.ZERO;
 
+        // 주문목록에 각각에 대하여 재고선점 및 주문추가
         for (OrderCommand.OrderItemCommand itemCommand : command.items()) {
-            ProductSku sku = productSkuService.getBySkuIdWithLock(itemCommand.productSkuId());
+            // 상품SKU 조회
+            ProductSku sku = productSkuService.getBySkuId(itemCommand.productSkuId());
+            // 상품 재고선점, 재고차감
             productSkuService.reserveStock(sku.getId(), itemCommand.quantity());
-            initialPrice = initialPrice.add(BigDecimal.valueOf(sku.getPrice()).multiply(BigDecimal.valueOf(itemCommand.quantity())));
+            // 해당 상품에 대한 주문총액 계산
+            initialPrice = initialPrice.add(Order.getInitialTotalPrice(sku.getPrice(),itemCommand.quantity()));
+            // 상품쿠폰이 있을 경우 해당 위치에 로직 추가
+            // 주문목록에 추가
             order.addOrderItem(OrderItem.create(itemCommand.productSkuId(), itemCommand.quantity()));
         }
+        // 주문서에 총 주문금액 추가
         order.updatePrice(initialPrice.longValue());
-
         // 쿠폰 적용
-        couponService.applyCouponsToOrder(command, user, order);
+        couponService.applyCartCouponsToOrder(command, user, order);
+
         // 주문 저장
         Order savedOrder = orderService.saveOrder(order);
-        // 상품 상태 업데이트
+
+        // 상품 품절여부 확인 및 업데이트
         command.items().forEach(item -> {
             ProductSku sku = productSkuService.getBySkuId(item.productSkuId());
             boolean isAllSoldOut = productSkuService.isAllSoldOut(sku.getProduct().getId());
@@ -81,10 +89,8 @@ public class OrderApplicationService implements OrderUsecase {
     public OrderInfo.CancelOrder cancelOrder(OrderCommand.CancelOrder command) {
         // 사용자 조회
         User user = userService.getUser(command.loginId());
-        // 주문 조회
-        Order order = orderService.getOrder(command.orderId());
-        // 취소 가능 여부 검증
-        orderService.validateCancelable(order,user);
+        // 취소 가능 주문 조회
+        Order order = orderService.getCancelableOrder(command.orderId(),user.getId());
         // 재고 복구
         order.getOrderItems().forEach(item ->
                 productSkuService.rollbackReservedStock(item.getProductSkuId(), item.getQuantity())

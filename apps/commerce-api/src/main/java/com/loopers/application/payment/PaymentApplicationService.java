@@ -45,7 +45,6 @@ public class PaymentApplicationService implements PaymentUsecase {
     }
 
     @Override
-    @Transactional
     public void syncPayment(PaymentCommand.SyncPayment command) {
 
         // 결제내역 조회
