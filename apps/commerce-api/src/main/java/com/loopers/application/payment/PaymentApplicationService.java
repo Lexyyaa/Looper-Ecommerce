@@ -2,19 +2,19 @@ package com.loopers.application.payment;
 
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderService;
-import com.loopers.domain.payment.Payment;
-import com.loopers.domain.payment.PaymentCommand;
-import com.loopers.domain.payment.PaymentInfo;
-import com.loopers.domain.payment.PaymentService;
+import com.loopers.domain.payment.*;
 import com.loopers.domain.paymentgateway.PaymentDetail;
-import com.loopers.domain.product.ProductSkuService;
 import com.loopers.domain.user.User;
-import com.loopers.domain.user.UserCommand;
 import com.loopers.domain.user.UserService;
+import com.loopers.shared.logging.Envelope;
+import com.loopers.shared.logging.SystemActors;
+import com.loopers.domain.monitoring.activity.ActivityPublisher;
+import com.loopers.domain.monitoring.activity.payload.PaymentActivityPayload;
+import com.loopers.domain.monitoring.resultlog.ResultLogPublisher;
+import com.loopers.domain.monitoring.resultlog.payload.PaymentResultLogs;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,12 +27,19 @@ public class PaymentApplicationService implements PaymentUsecase {
     private final UserService userService;
     private final OrderService orderService;
     private final PaymentService paymentService;
-    private final ProductSkuService productSkuService;
-
     private final PaymentProcessorFactory paymentProcessorFactory;
+    private final PaymentEventPublisher paymentEventPublisher;
+    private final ActivityPublisher activityPublisher;
+    private final ResultLogPublisher resultLogPublisher;
 
     @Override
     public PaymentInfo.CreatePayment createPayment(PaymentCommand.CreatePayment command) {
+        // 사용자활동로그(결제요청)
+        activityPublisher.publish(Envelope.of(
+                command.loginId(),
+                new PaymentActivityPayload.PayRequested(command.orderId(), command.amount(), command.method())
+        ));
+
         //사용자 조회
         User user = userService.getUserWithLock(command.loginId());
         // 결제 가능 상태의 주문 가져오기
@@ -59,16 +66,21 @@ public class PaymentApplicationService implements PaymentUsecase {
         // 주문 상태/재고 처리
         switch (paymentDetail.status()) {
             case Payment.Status.SUCCESS -> {
-                order.getOrderItems().forEach(item ->
-                        productSkuService.confirmStock(item.getProductSkuId(), item.getQuantity())
-                );
-                orderService.confirmOrder(order);
+                // 결제 성공시 수행할 이벤트 발행
+                paymentEventPublisher.publish(new PaymentEvent.PaymentSucceededEvent(order));
+                // 결제 결과 전송
+                resultLogPublisher.publish(Envelope.of(
+                        SystemActors.PG_CALLBACK,
+                        new PaymentResultLogs.PaymentSucceeded(order.getId(), payment.getId(), payment.getAmount(), payment.getMethod())
+                ));
             }
             case Payment.Status.FAILED -> {
-                order.getOrderItems().forEach(item ->
-                        productSkuService.rollbackReservedStock(item.getProductSkuId(), item.getQuantity())
-                );
-                orderService.cancelOrder(order);
+                paymentEventPublisher.publish(new PaymentEvent.PaymentFailedEvent(order));
+                // 결제 결과 전송
+                resultLogPublisher.publish(Envelope.of(
+                        SystemActors.PG_CALLBACK,
+                        new PaymentResultLogs.PaymentFailed(order.getId(), payment.getId(), payment.getAmount(), payment.getMethod(),paymentDetail.reason())
+                ));
             }
         }
     }
@@ -85,32 +97,5 @@ public class PaymentApplicationService implements PaymentUsecase {
         for (Payment payment : candidates) {
             this.syncPayment(PaymentCommand.SyncPayment.from(payment));
         }
-    }
-
-    @Override
-    @Transactional
-    public PaymentInfo.CancelPayment cancelPayment(PaymentCommand.CancelPayment command) {
-        // 사용자 조회
-        User user = userService.getUserWithLock(command.loginId());
-        // 결제 조회
-        Payment payment = paymentService.getPayment(command.paymentId());
-        // 결제 취소
-        paymentService.cancelPayment(payment,"");
-        // 결제수단별 복구 처리
-        if (payment.getMethod() == Payment.Method.POINT) {
-            UserCommand.Charge chargeCommand  = new UserCommand.Charge(command.loginId(), payment.getAmount());
-            userService.charge(chargeCommand);
-        }
-        // 취소 가능 주문 조회
-        Order order = orderService.getCancelableOrder(command.orderId(),user.getId());
-        // 재고 복구
-        order.getOrderItems().forEach(item ->
-                productSkuService.rollbackReservedStock(item.getProductSkuId(), item.getQuantity())
-        );
-        // 주문 상태 변경 및 저장
-        orderService.cancelOrder(order);
-        UserCommand.Charge charge = new UserCommand.Charge(command.loginId(), payment.getAmount());
-        userService.charge(charge);
-        return PaymentInfo.CancelPayment.from(payment);
     }
 }
