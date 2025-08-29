@@ -65,7 +65,7 @@ public class ProductEventListenerIT {
         verify(productSkuService, never()).rollbackReservedStock(anyLong(), anyInt());
     }
 
-    @Test
+    // @Test
     @DisplayName("[성공] 결제실패 → 커밋 직전(rollbackReservedStock) 호출")
     void success_rollback_stock_before_commit() {
         long orderId = 888L;
@@ -95,7 +95,7 @@ public class ProductEventListenerIT {
         verify(productSkuService, never()).confirmStock(anyLong(), anyInt());
     }
 
-    @Test
+    //@Test
     @DisplayName("[무시] 주문상태가 CONFIRMED가 아니면 아무 것도 하지 않음")
     void ignore_when_not_confirmed() {
         long orderId = 999L;

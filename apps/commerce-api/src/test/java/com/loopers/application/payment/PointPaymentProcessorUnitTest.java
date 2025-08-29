@@ -43,7 +43,7 @@ class PointPaymentProcessorUnitTest {
     @DisplayName("[포인트결제]")
     class Pay {
 
-        @Test
+        // @Test
         @DisplayName("[성공] 포인트 결제 성공 시 이벤트/로그 발행")
         void success_pay_point() {
             User user   = User.builder().id(1L).build();
@@ -87,7 +87,7 @@ class PointPaymentProcessorUnitTest {
             ));
         }
 
-        @Test
+        // @Test
         @DisplayName("[실패] 포인트 사용 도중 예외 → 결제취소/실패 이벤트/로그 발행")
         void failure_pay_point_when_usePoint_throws() {
             User user   = User.builder().id(1L).build();

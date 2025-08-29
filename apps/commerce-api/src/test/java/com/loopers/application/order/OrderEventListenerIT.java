@@ -16,7 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 @SpringBootTest
-@DisplayName("OrderEventListener IT (After-Commit)")
+@DisplayName("OrderEventListener IT")
 class OrderEventListenerIT {
 
     @Autowired
