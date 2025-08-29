@@ -2,6 +2,7 @@ package com.loopers.application.payment;
 
 import com.loopers.application.order.OrderApplicationService;
 import com.loopers.domain.order.OrderCommand;
+import com.loopers.domain.payment.Payment;
 import com.loopers.domain.payment.PaymentCommand;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductRepository;
@@ -87,7 +88,8 @@ class PaymentConcurrenyTest {
                                 loginId,
                                 orderRes.orderId(),
                                 payAmount,
-                                "POINT"
+                                Payment.Method.POINT,
+                                new PaymentCommand.CardPaymentDetails("삼성", "1234-1234-1234-1234")
                         );
                         paymentApplicationService.createPayment(payCmd);
                         success.incrementAndGet();
@@ -133,7 +135,8 @@ class PaymentConcurrenyTest {
                                 loginId,
                                 orderRes.orderId(),
                                 payAmount,
-                                "POINT"
+                                Payment.Method.POINT,
+                                new PaymentCommand.CardPaymentDetails("삼성", "1234-1234-1234-1234")
                         );
                         paymentApplicationService.createPayment(payCmd);
                         success.incrementAndGet();

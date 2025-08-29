@@ -68,7 +68,7 @@ public abstract class Coupon {
         CART, PRODUCT, BRAND, CATEGORY
     }
 
-    public abstract BigDecimal discount(BigDecimal originalAmount);
+   public abstract BigDecimal discount(BigDecimal originalAmount);
 
     @PrePersist
     void onCreate() {

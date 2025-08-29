@@ -9,5 +9,4 @@ public interface OrderUsecase {
     OrderInfo.CreateOrder order(OrderCommand.CreateOrder command);
     List<OrderInfo.OrderListItem> getOrdersByUserId(String loginId);
     OrderInfo.OrderDetail getOrderDetail(Long orderId);
-    OrderInfo.CancelOrder cancelOrder(OrderCommand.CancelOrder command);
 }

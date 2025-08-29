@@ -60,6 +60,7 @@ public class Order extends BaseEntity {
             throw new CoreException(ErrorType.BAD_REQUEST, "금액은 1원 이상이어야 합니다.");
         }
         this.price = amount;
+        this.finalPrice = amount;
     }
 
     public void validateCancelable(Long userId){

@@ -1,34 +1,25 @@
 package com.loopers.application.payment;
 
-import com.loopers.domain.BaseEntity;
 import com.loopers.domain.order.Order;
-import com.loopers.domain.order.OrderService;
-import com.loopers.domain.payment.Payment;
-import com.loopers.domain.payment.PaymentCommand;
-import com.loopers.domain.payment.PaymentService;
+import com.loopers.domain.payment.*;
 import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserService;
+import com.loopers.shared.logging.Envelope;
+import com.loopers.domain.monitoring.resultlog.ResultLogPublisher;
+import com.loopers.domain.monitoring.resultlog.payload.PaymentResultLogs;
 import com.loopers.support.error.CoreException;
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.Entity;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.NaturalId;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class PointPaymentProcessor implements PaymentProcessor {
 
     private final UserService userService;
-    private final OrderService orderService;
     private final PaymentService paymentService;
+    private final PaymentEventPublisher paymentEventPublisher;
+    private final ResultLogPublisher resultLogPublisher;
 
     @Override
     public Payment.Method getMethod() {
@@ -36,7 +27,7 @@ public class PointPaymentProcessor implements PaymentProcessor {
     }
 
     @Override
-    @Transactional // 별도의 재시도는 없음, DB Timeout 정도만 관리.
+    @Transactional
     public Payment pay(User user, Order order, PaymentCommand.CreatePayment command) {
         Payment saved = null;
 
@@ -51,13 +42,25 @@ public class PointPaymentProcessor implements PaymentProcessor {
         try{
             // 포인트 사용
             userService.usePoint(user, order.getFinalPrice());
-            // 주문상태변경(주문완료)
-            orderService.confirmOrder(order);
             // 결제상태변경(결제완료)
             saved = paymentService.confirmPayment(payment);
+            // 결제 성공시 수행할 이벤트 발행
+            paymentEventPublisher.publish(new PaymentEvent.PaymentSucceededEvent(order));
+            // 결제 결과 전송
+            resultLogPublisher.publish(Envelope.of(
+                    command.loginId(),
+                    new PaymentResultLogs.PaymentSucceeded(order.getId(), saved.getId(), saved.getAmount(), saved.getMethod())
+            ));
         }catch (CoreException e){
             // 결제상태변경(결제실패)
             saved = paymentService.cancelPayment(payment,e.getCustomMessage());
+            // 결제 실패시 수행할 이벤트 발행
+            paymentEventPublisher.publish(new PaymentEvent.PaymentFailedEvent(order));
+            // 결제 결과 전송
+            resultLogPublisher.publish(Envelope.of(
+                    command.loginId(),
+                    new PaymentResultLogs.PaymentFailed(order.getId(), saved.getId(), saved.getAmount(), saved.getMethod(), e.getMessage())
+            ));
         }
 
         return saved;

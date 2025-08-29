@@ -35,8 +35,6 @@ public class CardPaymentProcessor implements PaymentProcessor {
     public Payment.Method getMethod() {
         return Payment.Method.CARD;
     }
-
-    // request 적용
     @Retry(name = "pg-request")
     @RateLimiter(name = "pg-request")
     @CircuitBreaker(name = "pg-request", fallbackMethod = "fallbackPending")
@@ -71,6 +69,7 @@ public class CardPaymentProcessor implements PaymentProcessor {
             return payment;
         }
     }
+
 
     @Retry(name = "pg-request")
     @RateLimiter(name = "pg-request")

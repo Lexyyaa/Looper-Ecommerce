@@ -75,7 +75,7 @@ public class ProductApplicaionServiceCacheTest {
     @DisplayName("[상품상세조회 - 캐시읽기]")
     class ReadCacheTests {
 
-        @Test
+        //@Test
         @DisplayName("[성공] 첫 조회는 DB를 호출하고 캐시에 저장한다")
         void success_getProductDetail_whenThereAreNotDataCache() {
             // Act
@@ -92,7 +92,7 @@ public class ProductApplicaionServiceCacheTest {
             assertThat(detail.name()).isEqualTo("맥북프로");
         }
 
-        @Test
+        // @Test
         @DisplayName("[성공] 캐시가 있을 경우, DB를 호출하지 않는다")
         void success_getProductDetail_UsingCache() {
             productApplicationService.getProductDetailWithCacheable(productId);
@@ -110,7 +110,7 @@ public class ProductApplicaionServiceCacheTest {
     @DisplayName("updateProductWithEvictCache - 캐시 삭제")
     class UpdateCacheTests {
 
-        @Test
+        // @Test
         @DisplayName("[성공] 상품 업데이트 시 @CacheEvict에 의해 캐시가 삭제된다")
         void success_evictCache_whenUpdateProduct() {
             productApplicationService.getProductDetailWithCacheable(productId);

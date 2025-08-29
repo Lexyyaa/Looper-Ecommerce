@@ -45,17 +45,4 @@ public class OrderController implements OrderV1ApiSpec {
         var orderDetail = orderUsecase.getOrderDetail(orderId);
         return ApiResponse.success(OrderV1Response.OrderDetail.from(orderDetail));
     }
-
-    @PatchMapping("/{orderId}/cancel")
-    public ApiResponse<OrderV1Response.CancelOrder> cancelOrder(
-            @RequestHeader("X-USER-ID") String loginId,
-            @PathVariable Long orderId
-    ) {
-        OrderCommand.CancelOrder command = new OrderCommand.CancelOrder(
-                loginId,
-                orderId
-        );
-        var cancelInfo = orderUsecase.cancelOrder(command);
-        return ApiResponse.success(OrderV1Response.CancelOrder.from(cancelInfo));
-    }
 }

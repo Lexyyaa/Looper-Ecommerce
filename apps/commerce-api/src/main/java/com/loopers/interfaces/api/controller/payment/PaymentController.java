@@ -25,19 +25,4 @@ public class PaymentController implements PaymentV1ApiSpec {
         var paymentInfo = paymentUsecase.createPayment(command);
         return ApiResponse.success(PaymentV1Response.CreatePayment.from(paymentInfo));
     }
-
-    @DeleteMapping("/{orderId}")
-    public ApiResponse<PaymentV1Response.CancelPayment> cancelPayment(
-            @PathVariable Long orderId,
-            @PathVariable Long paymentId,
-            @RequestBody PaymentV1Request.CancelPayment request
-    ) {
-        PaymentCommand.CancelPayment command = new PaymentCommand.CancelPayment(
-                request.loginId(),
-                orderId,
-                paymentId
-        );
-        var cancelInfo = paymentUsecase.cancelPayment(command);
-        return ApiResponse.success(PaymentV1Response.CancelPayment.from(cancelInfo));
-    }
 }
