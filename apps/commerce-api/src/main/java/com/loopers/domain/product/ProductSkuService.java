@@ -16,24 +16,15 @@ public class ProductSkuService {
 
     private final ProductRepository productRepository;
 
-    public List<ProductSku> getByProductId(Long productId) {
-        return productRepository.findAllByProductId(productId);
-    }
-
     public ProductSku getBySkuId(Long skuId) {
         return productRepository.findBySkuId(skuId)
                 .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND,"존재하지 않는 상품 SKUID: " + skuId));
     }
 
-    public ProductSku getBySkuIdWithLock(Long skuId) {
-        return productRepository.findByIdWithOptimisticLock(skuId)
-                .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND,"존재하지 않는 상품 SKUID: " + skuId));
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public ProductSku reserveStock(Long skuId, int qty) {
         try {
-            ProductSku sku = productRepository.findByIdWithOptimisticLock(skuId)
+            ProductSku sku = productRepository.findBySkuId(skuId)
                     .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 상품 SKUID: " + skuId));
             sku.reserveStock(qty);
             return productRepository.saveProductSku(sku);
@@ -42,14 +33,26 @@ public class ProductSkuService {
         }
     }
 
-    public void rollbackReservedStock(Long skuId, int quantity) {
+    public boolean isAllSoldOut(Long productId) {
+        return !productRepository.existsAvailableStock(productId);
+    }
+
+    @Transactional
+    public void rollbackReservedStock(Long skuId, int qty) {
         ProductSku sku = getBySkuId(skuId);
-        sku.rollbackStock(quantity);
+        sku.rollbackStock(qty);
         productRepository.saveProductSku(sku);
     }
 
-    public boolean isAllSoldOut(Long productId) {
-        return !productRepository.existsAvailableStock(productId);
+    @Transactional
+    public void confirmStock(Long skuId, int qty) {
+        ProductSku sku = getBySkuId(skuId);
+        sku.confirmStock(qty);
+        productRepository.saveProductSku(sku);
+    }
+
+    public List<ProductSku> getByProductId(Long productId) {
+        return productRepository.findAllByProductId(productId);
     }
 
     public Long getMinPrice(Long productId) {
