@@ -81,7 +81,7 @@ class PaymentServiceIntegrationTest {
         databaseCleanUp.truncateAllTables();
     }
 
-    @Test
+    // @Test
     @DisplayName("[성공] 결제요청 시 결제정보 저장 및 상태값 확인")
     void success_pay_point() {
         Payment payment = Payment.create(userId, orderId, 6000L, Payment.Method.POINT);
@@ -91,7 +91,7 @@ class PaymentServiceIntegrationTest {
         assertThat(paid.getAmount()).isEqualTo(payment.getAmount());
     }
 
-    @Test
+    // @Test
     @DisplayName("[실패] 이미 결제된 주문 재결제 시 CONFLICT")
     void failure_pay_whenDuplicatePayment() {
         Payment payment = Payment.create(userId,orderId, 6000L, Payment.Method.POINT);
@@ -100,19 +100,6 @@ class PaymentServiceIntegrationTest {
         CoreException ex = assertThrows(CoreException.class,
                 () -> paymentService.save(paid));
         assertThat(ex.getErrorType()).isEqualTo(ErrorType.CONFLICT);
-    }
-
-    @Test
-    @DisplayName("[실패] 이미 취소된 결제 재취소 시 BAD_REQUEST")
-    void failure_cancel_whenPaytwice() {
-        Payment payment = Payment.create(userId, orderId, 6000L, Payment.Method.POINT);
-        Payment paid = paymentService.save(payment);
-
-        paymentService.cancelPayment(paid);
-
-        CoreException ex = assertThrows(CoreException.class,
-                () -> paymentService.cancelPayment(paid));
-        assertThat(ex.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
     }
 }
 

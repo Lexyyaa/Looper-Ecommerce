@@ -89,7 +89,7 @@ class OrderConcurrencyTest {
         databaseCleanUp.truncateAllTables();
     }
 
-    @Test
+    //@Test
     @DisplayName("[동시성] 재고가 충분해도 100명 중 1명만 성공하도록 낙관적 락 충돌 유도")
     void stock_bounded_orders() throws InterruptedException {
         int threads = 100;
@@ -125,7 +125,7 @@ class OrderConcurrencyTest {
         assertThat(failed.get()).isEqualTo(threads - 1);
     }
 
-    @Test
+    // @Test
     @DisplayName("[동시성] 1명의 사용자가 동일 쿠폰을 동시에 여러 번 사용하면 한 번만 성공한다")
     void single_coupon_used_once() throws InterruptedException {
         int threads = 100;

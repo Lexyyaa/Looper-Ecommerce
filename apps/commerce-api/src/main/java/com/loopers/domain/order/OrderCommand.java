@@ -8,7 +8,15 @@ public class OrderCommand {
             String loginId,
             List<OrderItemCommand> items,
             Long cartCouponId
-    ) {}
+    ) {
+        public boolean hasCoupon() {
+            return cartCouponId != null;
+        }
+
+        public List<Long> getProductSkuIds() {
+            return items.stream().map(OrderItemCommand::productSkuId).toList();
+        }
+    }
 
     public record OrderItemCommand(
             Long productSkuId,

@@ -18,37 +18,29 @@ public class CouponService {
     private final CouponRepository couponRepository;
     private final CouponProcessorFactory couponProcessorFactory;
 
-    @Transactional
-    public void applyCouponsToOrder(OrderCommand.CreateOrder command, User user, Order order) {
-        if (command.cartCouponId() == null) {
-            order.updateFinalPrice(order.getPrice());
-            return;
-        }
 
-        // UserCoupon 조회
+    @Transactional
+    public UserCoupon applyCartCouponsToOrder(OrderCommand.CreateOrder command, User user, Order order) {
+
+        // 발급된 사용자쿠폰 조회
         UserCoupon userCoupon = couponRepository.findByIdWithPessimisticLock(command.cartCouponId())
                 .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "쿠폰을 찾을 수 없습니다."));
 
         // 쿠폰 타입에 맞는 Processor 가져옴
-        Coupon.TargetType targetType = userCoupon.getCoupon().getTargetType();
-        CouponProcessor processor = couponProcessorFactory.getProcessor(targetType);
+        CouponProcessor processor = couponProcessorFactory.getProcessor(Coupon.TargetType.CART);
 
-        // 유효성 검증
+        // 쿠폰상태 및 만료에 대한 유효성 검사
         userCoupon.checkAvailability(user.getId());
+
+        // 쿠폰별 사용가능 조건에 대한 검사
         BigDecimal originalPrice = BigDecimal.valueOf(order.getPrice());
         processor.validate(userCoupon, originalPrice);
 
         //쿠폰적용 및 최종결제예정금액 계산
         BigDecimal finalPrice = processor.apply(originalPrice, userCoupon.getCoupon());
-        BigDecimal discountedAmount = originalPrice.subtract(finalPrice);
 
-        // 쿠폰 사용 처리
-        userCoupon.use();
-        couponRepository.save(userCoupon);
-        CouponUsage usage = CouponUsage.create(userCoupon, discountedAmount);
-
-        // 주문정보 변경
+        // 최종 결제금액 변경
         order.updateFinalPrice(finalPrice.longValue());
-        order.addCouponUsage(usage);
+        return userCoupon;
     }
 }

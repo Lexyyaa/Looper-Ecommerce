@@ -115,4 +115,3 @@ class LikeServiceUnitTest {
     }
 
 }
-//실패케이스랑 test 할때 parameterizedTest 같은거써서 한번에 여러개의 값을 사용하는거,,,
