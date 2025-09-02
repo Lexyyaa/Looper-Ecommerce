@@ -1,4 +1,5 @@
 server:
+  port: 8081
   shutdown: graceful
   tomcat:
     threads:
@@ -22,7 +23,12 @@ spring:
       - jpa.yml
       - redis.yml
       - logging.yml
+      - kafka.yml
       - monitoring.yml
+
+management:
+  server:
+    port: 8091
 
 springdoc:
   use-fqn: true
@@ -37,6 +43,7 @@ spring:
 
 pg:
   userid: songcommerce
+  base-url: http://localhost:8080
   callback:
     base-url: http://localhost:8080/api/v1
     transaction-path: /pg/callback

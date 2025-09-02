@@ -44,5 +44,4 @@ public class ProductService {
         product.updateLikeCnt(likeCnt);
         return productRepository.saveProduct(product);
     }
-
 }

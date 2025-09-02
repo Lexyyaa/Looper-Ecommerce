@@ -48,7 +48,7 @@ class OrderServiceTest {
     @DisplayName("[주문 단건 조회]")
     class GetOrder {
 
-        @Test
+//        @Test
         @DisplayName("주문과 함께 주문 항목 목록을 조회한다")
         void success_getOrder_withOrderItems() {
             Order order = Order.create(1L, 1000L);

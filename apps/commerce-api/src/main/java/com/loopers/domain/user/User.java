@@ -114,4 +114,19 @@ public class User extends BaseEntity {
         }
         this.point -= amount;
     }
+
+    public boolean canPayByPoint(Long price){
+        return this.point >= price;
+    }
+
+    public void usePoint(Long amount){
+        if(amount <= 0){
+            throw new CoreException(ErrorType.BAD_REQUEST,"결제 금액은 0 보다 커야 합니다.");
+        }
+        else if(this.point < amount){
+            throw new CoreException(ErrorType.BAD_REQUEST,"보유 포인트가 부족합니다.");
+        }else {
+            this.point -= amount;
+        }
+    }
 }

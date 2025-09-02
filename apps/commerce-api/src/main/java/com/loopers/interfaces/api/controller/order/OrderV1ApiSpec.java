@@ -40,16 +40,4 @@ public interface OrderV1ApiSpec {
             @Parameter(name = "orderId", description = "조회할 주문의 고유 ID")
             @PathVariable Long orderId
     );
-
-    @Operation(
-            summary = "주문 취소",
-            description = "생성된 주문을 취소한다. 주문 취소 시 재고가 복구된다."
-    )
-    @PatchMapping("/{orderId}/cancel")
-    ApiResponse<OrderV1Response.CancelOrder> cancelOrder(
-            @Parameter(name = "X-USER-ID", description = "요청을 보낸 사용자의 고유 ID")
-            @RequestHeader("X-USER-ID") String loginId,
-            @Parameter(name = "orderId", description = "취소할 주문의 고유 ID")
-            @PathVariable Long orderId
-    );
 }
