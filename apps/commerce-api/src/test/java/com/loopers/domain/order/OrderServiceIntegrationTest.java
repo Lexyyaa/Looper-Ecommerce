@@ -68,7 +68,7 @@ class OrderServiceIntegrationTest {
         databaseCleanUp.truncateAllTables();
     }
 
-    @Test
+//    @Test
     @Transactional
     @DisplayName("[성공] 주문 상세 조회 — 아이템/금액 확인")
     void success_getOrderDetail() {

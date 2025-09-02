@@ -6,6 +6,7 @@ import com.loopers.support.error.ErrorType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -56,6 +57,11 @@ public class UserCoupon extends BaseEntity {
                 .issuedAt(issuedAt)
                 .expiredAt(expiredAt)
                 .build();
+    }
+
+    public void validate(Long targetId) {
+        // 유효성 검사
+        checkAvailability(targetId);
     }
 
     public void checkAvailability(Long currentUserId) {

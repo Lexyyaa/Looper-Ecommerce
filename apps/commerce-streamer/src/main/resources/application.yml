@@ -1,4 +1,6 @@
 server:
+  port: 8083
+
   shutdown: graceful
   tomcat:
     threads:
@@ -9,59 +11,48 @@ server:
     accept-count: 100 # 대기 큐 크기 (default : 100)
     keep-alive-timeout: 60s # 60s
   max-http-request-header-size: 8KB
-  port: 8082
 
 spring:
   main:
     web-application-type: servlet
   application:
-    name: pg-simulator
+    name: commerce-streamer
   profiles:
     active: local
   config:
     import:
       - jpa.yml
       - redis.yml
+      - kafka.yml
       - logging.yml
       - monitoring.yml
 
-datasource:
-  mysql-jpa:
-    main:
-      jdbc-url: jdbc:mysql://localhost:3306/paymentgateway
+management:
+  server:
+    port: 8093
 
-springdoc:
-  use-fqn: true
-  swagger-ui:
-    path: /swagger-ui.html
+# Custom Topic Configuration
+kafka:
+  topics:
+    catalog-events: catalog-events # 상품/재고/좋아요 이벤트 (key=productId)
+    order-events: order-events # 주문/결제 이벤트 (key=orderId)
+    dead-letter-queue: dlq-events # 실패한 메시지 처리
 
+
+demo-kafka:
+  test:
+    topic-name: demo-topic
 ---
 spring:
   config:
     activate:
       on-profile: local, test
 
-server:
-  port: 8082
-
-
-management:
-  server:
-    port: 8092
-
 ---
 spring:
   config:
     activate:
       on-profile: dev
-
-server:
-  port: 8082
-
-
-management:
-  server:
-    port: 8092
 
 ---
 spring:
@@ -78,21 +69,3 @@ spring:
 springdoc:
   api-docs:
     enabled: false
-
----
-spring.config.activate.on-profile: docker
-
-datasource:
-  mysql-jpa:
-    main:
-      jdbc-url: jdbc:mysql://mysql:3306/paymentgateway
-      username: paymentuser
-      password: paymentuser
-
-  redis:
-    master:
-      host: redis-master
-      port: 6379
-    replicas:
-      - host: redis-readonly
-        port: 6379
