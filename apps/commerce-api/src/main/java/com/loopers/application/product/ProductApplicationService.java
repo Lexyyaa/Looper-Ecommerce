@@ -21,6 +21,8 @@ public class ProductApplicationService implements ProductUsecase {
     private final ProductSummaryService productSummaryService;
     private final LikeService likeService;
     private final BrandService brandService;
+    private final ProductEventPublisher productEventPublisher;
+    private final ProductActivityPublisher productActivityPublisher;
 
     @Override
     @Transactional(readOnly = true)
@@ -32,7 +34,7 @@ public class ProductApplicationService implements ProductUsecase {
 
     @Override
     @Transactional(readOnly = true)
-    public ProductInfo.Detail getProductDetail(Long productId) {
+    public ProductInfo.Detail getProductDetail(String loginId, Long productId) {
         // 상품정보조회
         Product product = productService.getProduct(productId);
         // 상품 옵션별재고 조회
@@ -43,6 +45,11 @@ public class ProductApplicationService implements ProductUsecase {
         Long minPrice = productSkuService.getMinPrice(productId);
         // 브랜드 정보 조회
         String brandName = brandService.get(product.getBrandId()).getName();
+
+        // 사용자 활동로그(상품 조회)
+        productActivityPublisher.productDetail(new ProductActivityPayload.ProductDetailViewed(loginId, productId));
+        //상품 조회 수 집계 이벤트 발행
+        productEventPublisher.productDetail(new ProductEvent.ProductDetailViewed(loginId, productId));
 
         return ProductInfo.Detail.from(product, brandName, skus, minPrice, likeCount);
     }
