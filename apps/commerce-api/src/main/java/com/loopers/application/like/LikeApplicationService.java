@@ -5,11 +5,9 @@ import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductService;
 import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserService;
-import com.loopers.shared.logging.Envelope;
-import com.loopers.domain.monitoring.activity.ActivityPublisher;
-import com.loopers.domain.monitoring.activity.payload.LikeActivityPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,38 +23,39 @@ public class LikeApplicationService implements LikeUsecase {
     private final LikeService likeService;
     private final ProductService productService;
     private final LikeEventPublisher likeEventPublisher;
-    private final ActivityPublisher activityPublisher;
+    private final LikeActivityPublisher likeActivityPublisher;
 
     @Override
     @Transactional
+    @CacheEvict(value = "product:detail", key = "#command.targetId")
     public void like(LikeCommand.Like command) {
-        // 사용자 활동로그(좋아요 등록)
-        activityPublisher.publish(Envelope.of(command.loginId(),
-                new LikeActivityPayload.LikeAdded(command.loginId(), command.targetId(), command.targetType())));
-
         User user = userService.getUser(command.loginId());
         Product product = productService.getProduct(command.targetId());
         likeValidator.validateNotExists(user.getId(), product.getId(), command.targetType());
         likeService.save(user.getId(), product.getId(), command.targetType());
 
+        // 사용자 활동로그(좋아요 등록)
+        likeActivityPublisher.like(new LikeActivityPayload.LikeAdded(user.getId(), user.getLoginId(), product.getId(), LikeTargetType.PRODUCT));
+
         //좋아요 수 집계 이벤트 발행
-        likeEventPublisher.like(new LikeEvent.Added(user.getId(), product.getId(), command.targetType()));
+        likeEventPublisher.like(new LikeEvent.Added(user.getId(), user.getLoginId(), product.getId(), LikeTargetType.PRODUCT));
     }
 
     @Override
     @Transactional
+    @CacheEvict(value = "product:detail", key = "#command.targetId")
     public void unlike(LikeCommand.Like command) {
-        // 사용자 활동로그(좋아요 취소)
-        activityPublisher.publish(Envelope.of(command.loginId(),
-                new LikeActivityPayload.LikeRemoved(command.loginId(), command.targetId(), command.targetType())));
 
         User user = userService.getUser(command.loginId());
         Product product = productService.getProduct(command.targetId());
         likeValidator.validateExists(user.getId(), product.getId(), command.targetType());
         likeService.delete(user.getId(), product.getId(), command.targetType());
 
+        // 사용자 활동로그(좋아요 취소)
+        likeActivityPublisher.unlike(new LikeActivityPayload.LikeRemoved(user.getId(), user.getLoginId(), product.getId(), LikeTargetType.PRODUCT));
+
         //좋아요 수 집계 이벤트 발행
-        likeEventPublisher.unlike(new LikeEvent.Removed(user.getId(), product.getId(), command.targetType()));
+        likeEventPublisher.unlike(new LikeEvent.Removed(user.getId(), user.getLoginId(), product.getId(), command.targetType()));
     }
 
     @Override

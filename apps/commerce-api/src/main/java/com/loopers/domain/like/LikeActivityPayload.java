@@ -1,20 +1,17 @@
-package com.loopers.domain.monitoring.activity.payload;
+package com.loopers.domain.like;
 
-import com.loopers.domain.like.LikeTargetType;
-import com.loopers.domain.monitoring.activity.ActivityPayload;
-
+/** 활동(행위) 이벤트 — 좋아요/취소 */
 public class LikeActivityPayload {
     public record LikeAdded(
+            Long userId,
             String loginId,
             Long targetId,
             LikeTargetType targetType
-    )   implements ActivityPayload {
-    }
-
+    ) {}
     public record LikeRemoved(
+            Long userId,
             String loginId,
             Long targetId,
             LikeTargetType targetType
-    ) implements ActivityPayload {
-    }
+    ) {}
 }
