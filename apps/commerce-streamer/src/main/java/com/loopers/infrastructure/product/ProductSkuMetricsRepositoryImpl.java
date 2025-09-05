@@ -17,11 +17,6 @@ public class ProductSkuMetricsRepositoryImpl implements ProductSkuMetricsReposit
     private final ProductSkuMetricsJpaRepository productSkuMetricsJpaRepository;
 
     @Override
-    public Optional<ProductSkuMetrics> findById(long id) {
-        return productSkuMetricsJpaRepository.findById(id);
-    }
-
-    @Override
     public ProductSkuMetrics save(ProductSkuMetrics productSkuMetrics) {
         return productSkuMetricsJpaRepository.save(productSkuMetrics);
     }

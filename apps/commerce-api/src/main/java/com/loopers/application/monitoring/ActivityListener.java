@@ -2,7 +2,7 @@ package com.loopers.application.monitoring;
 
 import com.loopers.domain.monitoring.activity.ActivityPayload;
 import com.loopers.domain.monitoring.activity.ActivityService;
-import com.loopers.shared.logging.Envelope;
+import com.loopers.shared.event.Envelope;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

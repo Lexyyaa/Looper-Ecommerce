@@ -1,8 +1,8 @@
-package com.loopers.infrastructure.monitoring;
+package com.loopers.infrastructure.persistance.monitoring;
 
 import com.loopers.domain.monitoring.resultlog.ResultLogPayload;
 import com.loopers.domain.monitoring.resultlog.ResultLogPublisher;
-import com.loopers.shared.logging.Envelope;
+import com.loopers.shared.event.Envelope;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
