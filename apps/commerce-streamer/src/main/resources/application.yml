@@ -31,22 +31,56 @@ management:
   server:
     port: 8093
 
-# Custom Topic Configuration
-kafka:
-  topics:
-    catalog-events: catalog-events # 상품/재고/좋아요 이벤트 (key=productId)
-    order-events: order-events # 주문/결제 이벤트 (key=orderId)
-    dead-letter-queue: dlq-events # 실패한 메시지 처리
-
-
-demo-kafka:
-  test:
-    topic-name: demo-topic
 ---
 spring:
   config:
     activate:
-      on-profile: local, test
+      on-profile: test
+
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+    consumer:
+      auto-offset-reset: earliest
+      properties:
+        spring.json.trusted.packages: "*"
+    listener:
+      ack-mode: manual
+
+  main:
+    web-application-type: servlet
+
+  cloud:
+    openfeign:
+      enabled: false
+
+pg:
+  userid: songcommerce
+  base-url: http://localhost:18081
+  callback:
+    base-url: http://localhost:18081/api/v1
+    transaction-path: /pg/callback
+
+
+kafka:
+  topic:
+    activity-events: activity-events
+    catalog-events:  catalog-events
+    sku-events: sku-events
+    consumer-dlq: consumer-dlq
+    producer-dlq: producer-dlq
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+kafka:
+  topic:
+    activity-events: activity-events
+    catalog-events:  catalog-events
+    sku-events:    sku-events
+    consumer-dlq:    consumer-dlq
 
 ---
 spring:

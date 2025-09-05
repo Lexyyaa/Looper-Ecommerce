@@ -1,7 +1,7 @@
 package com.loopers.domain.monitoring.resultlog;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.loopers.shared.logging.Envelope;
+import com.loopers.shared.event.Envelope;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +13,11 @@ public class ResultLogService {
 
     public void write(Envelope<? extends ResultLogPayload> env)  {
         try {
-            var n = om.createObjectNode(); //  이 N 이 뭐야,,?
+            var n = om.createObjectNode();
             n.put("id", env.id());
             n.put("at", env.at().toString());
             n.put("actorId", env.actorId());
-            n.put("kind", env.payload().getClass().getSimpleName()); // e.g., OrderSucceeded
+            n.put("kind", env.payload().getClass().getSimpleName());
             n.set("payload", om.valueToTree(env.payload()));
             log.info("resultlog {}", n);
 

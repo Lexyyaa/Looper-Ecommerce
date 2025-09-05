@@ -1,7 +1,7 @@
 package com.loopers.domain.monitoring.activity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.loopers.shared.logging.Envelope;
+import com.loopers.shared.event.Envelope;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

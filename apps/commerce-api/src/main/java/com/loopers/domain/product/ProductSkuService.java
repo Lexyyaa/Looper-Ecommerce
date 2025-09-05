@@ -45,10 +45,11 @@ public class ProductSkuService {
     }
 
     @Transactional
-    public void confirmStock(Long skuId, int qty) {
+    public ProductSku confirmStock(Long skuId, int qty) {
         ProductSku sku = getBySkuId(skuId);
         sku.confirmStock(qty);
-        productRepository.saveProductSku(sku);
+        ProductSku saved = productRepository.saveProductSku(sku);
+        return saved;
     }
 
     public List<ProductSku> getByProductId(Long productId) {

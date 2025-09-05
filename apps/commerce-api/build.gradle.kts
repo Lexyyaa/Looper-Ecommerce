@@ -18,11 +18,10 @@ dependencies {
     // test-fixtures
     testImplementation(testFixtures(project(":modules:jpa")))
     testImplementation(testFixtures(project(":modules:redis")))
-
+    testImplementation(testFixtures(project(":modules:kafka")))
 
     // feign
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
-
     implementation("org.springframework.boot:spring-boot-starter-aop")
 
     // Resilience4j
@@ -34,4 +33,5 @@ dependencies {
     implementation("io.github.resilience4j:resilience4j-bulkhead")
     implementation("io.github.resilience4j:resilience4j-timelimiter")
 
+    testImplementation("org.springframework.kafka:spring-kafka-test")
 }

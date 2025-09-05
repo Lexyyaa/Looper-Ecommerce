@@ -20,4 +20,9 @@ dependencies {
     testImplementation(testFixtures(project(":modules:jpa")))
     testImplementation(testFixtures(project(":modules:redis")))
     testImplementation(testFixtures(project(":modules:kafka")))
+
+    // 한 컨텍스트에서 올리기 위해 API 쪽을 test 스코프로 끌어옴
+    testImplementation(project(":apps:commerce-api"))
+    testImplementation("org.springframework.kafka:spring-kafka-test")
+
 }

@@ -1,17 +1,16 @@
 package com.loopers.application.payment;
 
+import com.loopers.domain.monitoring.activity.payload.PaymentActivityPayload;
+import com.loopers.domain.monitoring.resultlog.ResultLogPublisher;
+import com.loopers.domain.monitoring.resultlog.payload.PaymentResultLogs;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderService;
 import com.loopers.domain.payment.*;
 import com.loopers.domain.paymentgateway.PaymentDetail;
 import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserService;
-import com.loopers.shared.logging.Envelope;
+import com.loopers.shared.event.Envelope;
 import com.loopers.shared.logging.SystemActors;
-import com.loopers.domain.monitoring.activity.ActivityPublisher;
-import com.loopers.domain.monitoring.activity.payload.PaymentActivityPayload;
-import com.loopers.domain.monitoring.resultlog.ResultLogPublisher;
-import com.loopers.domain.monitoring.resultlog.payload.PaymentResultLogs;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -29,17 +28,10 @@ public class PaymentApplicationService implements PaymentUsecase {
     private final PaymentService paymentService;
     private final PaymentProcessorFactory paymentProcessorFactory;
     private final PaymentEventPublisher paymentEventPublisher;
-    private final ActivityPublisher activityPublisher;
     private final ResultLogPublisher resultLogPublisher;
 
     @Override
     public PaymentInfo.CreatePayment createPayment(PaymentCommand.CreatePayment command) {
-        // 사용자활동로그(결제요청)
-        activityPublisher.publish(Envelope.of(
-                command.loginId(),
-                new PaymentActivityPayload.PayRequested(command.orderId(), command.amount(), command.method())
-        ));
-
         //사용자 조회
         User user = userService.getUserWithLock(command.loginId());
         // 결제 가능 상태의 주문 가져오기
