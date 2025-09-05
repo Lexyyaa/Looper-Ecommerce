@@ -1,4 +1,4 @@
-package com.loopers.infrastructure.order;
+package com.loopers.infrastructure.event.order;
 
 import com.loopers.domain.order.OrderEvent;
 import com.loopers.domain.order.OrderEventPublisher;
