@@ -56,6 +56,7 @@ public class ProductEventListener {
             boolean isAllSoldOut = productSkuService.isAllSoldOut(sku.getProduct().getId());
 
             var cache = cacheManager.getCache("product:detail");
+
             if (cache != null && isAllSoldOut) {
                 cache.evict(sku.getProduct().getId());
             }

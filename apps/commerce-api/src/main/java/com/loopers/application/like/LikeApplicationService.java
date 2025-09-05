@@ -45,7 +45,6 @@ public class LikeApplicationService implements LikeUsecase {
     @Transactional
     @CacheEvict(value = "product:detail", key = "#command.targetId")
     public void unlike(LikeCommand.Like command) {
-
         User user = userService.getUser(command.loginId());
         Product product = productService.getProduct(command.targetId());
         likeValidator.validateExists(user.getId(), product.getId(), command.targetType());
@@ -61,7 +60,6 @@ public class LikeApplicationService implements LikeUsecase {
     @Override
     @Transactional(readOnly = true)
     public List<LikeInfo.LikedProduct> getLikedProducts(LikeCommand.LikedProducts command) {
-
         User user = userService.getUser(command.loginId());
 
         List<LikedProduct> infos = likeService.getLikedProducts(
