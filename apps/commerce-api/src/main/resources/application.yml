@@ -39,7 +39,31 @@ springdoc:
 spring:
   config:
     activate:
-      on-profile: local, test
+      on-profile: test
+
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+    producer:
+      acks: all
+      retries: 3
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+kafka:
+  topic:
+    activity-events: activity-events-test
+    producer-dlq:    producer-dlq-test
+    catalog-events:  catalog-events-test
+    sku-events:    sku-events-test
+
+pg:
+  base-url: localhost:18080
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
 
 pg:
   userid: songcommerce
@@ -47,6 +71,13 @@ pg:
   callback:
     base-url: http://localhost:8080/api/v1
     transaction-path: /pg/callback
+
+kafka:
+  topic:
+    activity-events: activity-events
+    catalog-events:  catalog-events
+    sku-events:    sku-events
+    producer-dlq:    producer-dlq
 
 ---
 spring:

@@ -1,4 +1,4 @@
-package com.loopers.support.async;
+package com.loopers.support.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +14,7 @@ public class AsyncConfig {
     @Bean(name = "applicationEventTaskExecutor")
     public Executor applicationEventTaskExecutor() {
         ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
-        exec.setThreadNamePrefix("event-");
+        exec.setThreadNamePrefix("commerce-api-event-");
         exec.setCorePoolSize(4);
         exec.setMaxPoolSize(8);
         exec.setQueueCapacity(1000);
