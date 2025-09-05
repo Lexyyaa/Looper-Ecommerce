@@ -1,7 +1,8 @@
-package com.loopers.infrastructure.like;
+package com.loopers.infrastructure.event.like;
 
 import com.loopers.domain.like.LikeEvent;
 import com.loopers.domain.like.LikeEventPublisher;
+import com.loopers.shared.event.Envelope;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -16,11 +17,11 @@ public class LikeEventPublisherImpl implements LikeEventPublisher {
 
     @Override
     public void like(LikeEvent.Added event) {
-        applicationEventPublisher.publishEvent(event);
+        applicationEventPublisher.publishEvent(Envelope.of(event.loginId(),event));
     }
 
     @Override
     public void unlike(LikeEvent.Removed event) {
-        applicationEventPublisher.publishEvent(event);
+        applicationEventPublisher.publishEvent(Envelope.of(event.loginId(),event));
     }
 }

@@ -1,9 +1,8 @@
-package com.loopers.infrastructure.coupon;
+package com.loopers.infrastructure.persistance.coupon;
 
 import com.loopers.domain.coupon.UserCoupon;
 import com.loopers.domain.coupon.UserCouponRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.convert.ReadingConverter;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

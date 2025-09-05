@@ -1,4 +1,4 @@
-package com.loopers.infrastructure.brand;
+package com.loopers.infrastructure.persistance.brand;
 
 import com.loopers.domain.brand.Brand;
 import org.springframework.data.jpa.repository.JpaRepository;

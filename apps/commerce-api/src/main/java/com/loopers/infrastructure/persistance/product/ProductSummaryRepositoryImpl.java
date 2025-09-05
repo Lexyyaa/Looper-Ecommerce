@@ -1,4 +1,4 @@
-package com.loopers.infrastructure.product;
+package com.loopers.infrastructure.persistance.product;
 
 import com.loopers.domain.product.ProductSortType;
 import com.loopers.domain.product.ProductSummaryProjection;

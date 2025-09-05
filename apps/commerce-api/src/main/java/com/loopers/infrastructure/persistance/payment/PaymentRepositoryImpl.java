@@ -1,4 +1,4 @@
-package com.loopers.infrastructure.payment;
+package com.loopers.infrastructure.persistance.payment;
 
 import com.loopers.domain.payment.Payment;
 import com.loopers.domain.payment.PaymentRepository;

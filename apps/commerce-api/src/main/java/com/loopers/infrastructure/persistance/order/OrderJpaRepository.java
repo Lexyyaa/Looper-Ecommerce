@@ -1,4 +1,4 @@
-package com.loopers.infrastructure.order;
+package com.loopers.infrastructure.persistance.order;
 
 import com.loopers.domain.order.Order;
 import org.springframework.data.jpa.repository.JpaRepository;

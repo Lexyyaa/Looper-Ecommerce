@@ -1,4 +1,4 @@
-package com.loopers.infrastructure.coupon;
+package com.loopers.infrastructure.persistance.coupon;
 
 import com.loopers.domain.coupon.UserCoupon;
 import jakarta.persistence.LockModeType;

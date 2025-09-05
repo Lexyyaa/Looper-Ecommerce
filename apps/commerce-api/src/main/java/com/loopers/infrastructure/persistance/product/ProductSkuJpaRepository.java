@@ -1,4 +1,4 @@
-package com.loopers.infrastructure.product;
+package com.loopers.infrastructure.persistance.product;
 
 import com.loopers.domain.product.ProductSku;
 import jakarta.persistence.LockModeType;

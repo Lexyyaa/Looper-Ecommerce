@@ -1,4 +1,4 @@
-package com.loopers.infrastructure.user;
+package com.loopers.infrastructure.persistance.user;
 
 import com.loopers.domain.user.User;
 import jakarta.persistence.LockModeType;
