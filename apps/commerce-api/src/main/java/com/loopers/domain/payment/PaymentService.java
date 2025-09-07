@@ -2,11 +2,9 @@ package com.loopers.domain.payment;
 
 import com.loopers.domain.paymentgateway.PaymentDetail;
 import com.loopers.domain.pg.PgClientAdapter;
-import com.loopers.infrastructure.payment.PaymentJpaRepository;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
