@@ -81,4 +81,34 @@ public class CatalogApplicationService {
 
         handledService.saveAll("catalog-like", handledIds);
     }
+
+    public void onProductBatch(List<ConsumerRecord<Object, Object>> records) throws Exception {
+        List<JsonNode> toApply = new ArrayList<>();
+        Set<Long> productIds = new LinkedHashSet<>();
+        List<String> handledIds = new ArrayList<>();
+
+        for (ConsumerRecord<Object, Object> r : records) {
+            String eventId = io.header(r, "event_id");
+            if (!handledService.shouldProcess("catalog-product", eventId)) continue;
+
+            JsonNode body = objectMapper.readTree(io.payloadString(r)).path("payload");
+
+            long productId = body.path("productId").asLong();
+            productIds.add(productId);
+
+            toApply.add(body);
+            handledIds.add(eventId);
+        }
+
+        if (toApply.isEmpty()) return;
+
+        for (JsonNode payload : toApply) {
+            JsonNode envelope = objectMapper.createObjectNode().set("payload", payload);
+            metricsService.onStockConfirmed(envelope.toString());
+        }
+
+        rankingService.computeAndPutScoresToday(productIds);
+
+        handledService.saveAll("catalog-product", handledIds);
+    }
 }
