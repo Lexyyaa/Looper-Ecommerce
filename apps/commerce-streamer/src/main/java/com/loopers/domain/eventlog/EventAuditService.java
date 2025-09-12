@@ -1,7 +1,6 @@
 package com.loopers.domain.eventlog;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.loopers.infrastructure.eventlog.EventLogJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.header.Headers;
 import org.springframework.stereotype.Service;
@@ -9,13 +8,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class EventAuditService {
 
-    private final EventLogJpaRepository eventLogRepository;
+    private final EventLogRepository eventLogRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Transactional
@@ -39,5 +39,11 @@ public class EventAuditService {
                 .receivedAt(Instant.now())
                 .build();
         eventLogRepository.save(log);
+    }
+
+    @Transactional
+    public void saveAll(List<EventLog> logs) {
+        if (logs == null || logs.isEmpty()) return;
+        eventLogRepository.saveAll(logs);
     }
 }
