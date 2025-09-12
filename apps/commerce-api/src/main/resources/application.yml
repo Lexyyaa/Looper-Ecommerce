@@ -35,6 +35,21 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
+kafka:
+  topic:
+    activity-events: activity-events
+    catalog-like-events:  catalog-like-events
+    catalog-view-events:  catalog-view-events
+    catalog-product-events: catalog-product-events
+    consumer-dlq: consumer-dlq
+    producer-dlq: producer-dlq
+
+ranking:
+  key-prefix: rank:daily
+  top-k: 10
+  daily-ttl-days: 1
+  carry-over-alpha: 0.10
+
 ---
 spring:
   config:
