@@ -24,9 +24,9 @@ public class ProductMetrics {
 
     private Instant updatedAt;
 
-    public void incView(long delta){
-        if (delta > 0) {
-            this.viewCnt += delta; this.updatedAt = Instant.now();
+    public void increaseViewCnt(long amount){
+        if (amount > 0) {
+            this.viewCnt += amount; this.updatedAt = Instant.now();
         }
     }
 
