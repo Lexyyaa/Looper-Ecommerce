@@ -50,4 +50,35 @@ public class CatalogApplicationService {
 
         handledService.saveAll("catalog-view", handledIds);
     }
+
+    public void onLikeBatch(List<ConsumerRecord<Object, Object>> records) throws Exception {
+        Map<Long, Long> latestLike = new LinkedHashMap<>();
+        List<String> handledIds = new ArrayList<>();
+
+        for (ConsumerRecord<Object, Object> r : records) {
+            String eventId = io.header(r, "event_id");
+            if (!handledService.shouldProcess("catalog-like", eventId)) continue;
+
+            JsonNode body = objectMapper.readTree(io.payloadString(r)).path("payload");
+            long productId = body.path("productId").asLong();
+            long likeCount = body.path("likeCount").asLong();
+
+            latestLike.put(productId, likeCount);
+            handledIds.add(eventId);
+        }
+
+        if (latestLike.isEmpty()) return;
+
+        for (Map.Entry<Long, Long> e : latestLike.entrySet()) {
+            JsonNode payload  = objectMapper.createObjectNode()
+                    .put("productId", e.getKey())
+                    .put("likeCount", e.getValue());
+            JsonNode envelope = objectMapper.createObjectNode().set("payload", payload);
+            metricsService.onLikeChanged(envelope.toString());
+        }
+
+        rankingService.computeAndPutScoresToday(latestLike.keySet());
+
+        handledService.saveAll("catalog-like", handledIds);
+    }
 }
