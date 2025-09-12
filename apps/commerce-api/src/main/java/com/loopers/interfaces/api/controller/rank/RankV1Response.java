@@ -19,8 +19,8 @@ public class RankV1Response {
     }
 
     public record ProductRank(
-            int rank,
-            int score,
+            Long rank,
+            double score,
             Long productId,
             String name,
             Long price

@@ -5,10 +5,7 @@ import com.loopers.domain.product.ProductInfo;
 import com.loopers.interfaces.api.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,9 +25,8 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public ApiResponse<ProductV1Response.Detail> getProductDetail(@PathVariable Long productId) {
-//        ProductInfo.Detail detail = productUsecase.getProductDetail(productId);
-        ProductInfo.Detail detail = productUsecase.getProductDetailWithCacheable(productId);
+    public ApiResponse<ProductV1Response.Detail> getProductDetail(@RequestHeader("X-USER-ID") String loginId,@PathVariable Long productId) {
+        ProductInfo.Detail detail = productUsecase.getProductDetailWithCacheable(loginId,productId);
         return ApiResponse.success(ProductV1Response.Detail.from(detail));
     }
 }

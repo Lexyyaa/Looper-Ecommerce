@@ -13,10 +13,10 @@ import java.time.format.DateTimeFormatter;
 @Builder
 public class Rank {
     private final Long productId;
-    private final int position;
+    private final Long position;
     private final double score;
 
-    public static Rank create(Long productId, int position, double score) {
+    public static Rank create(Long productId, Long position, double score) {
         return new Rank(productId, position, score);
     }
 }

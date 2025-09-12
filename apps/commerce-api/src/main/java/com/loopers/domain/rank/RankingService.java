@@ -46,7 +46,7 @@ public class RankingService {
 
             long productId = Long.parseLong(productIdStr);
 
-            result.add(new Rank(productId, position++, score == null ? 0d : score));
+            result.add(new Rank(productId, (long) position++, score == null ? 0d : score));
         }
         return result;
     }
@@ -66,6 +66,6 @@ public class RankingService {
 
         int position = Math.toIntExact(zeroBased) + 1;
 
-        return new Rank(productId, position, score == null ? 0d : score);
+        return new Rank(productId, (long) position, score == null ? 0d : score);
     }
 }

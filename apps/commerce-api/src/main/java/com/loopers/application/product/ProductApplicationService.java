@@ -4,12 +4,16 @@ import com.loopers.domain.brand.BrandService;
 import com.loopers.domain.like.LikeService;
 import com.loopers.domain.like.LikeTargetType;
 import com.loopers.domain.product.*;
+import com.loopers.domain.rank.Rank;
+import com.loopers.domain.rank.RankingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 @Component
@@ -21,6 +25,7 @@ public class ProductApplicationService implements ProductUsecase {
     private final ProductSummaryService productSummaryService;
     private final LikeService likeService;
     private final BrandService brandService;
+    private final RankingService rankingService;
     private final ProductEventPublisher productEventPublisher;
     private final ProductActivityPublisher productActivityPublisher;
 
@@ -46,6 +51,9 @@ public class ProductApplicationService implements ProductUsecase {
         // 브랜드 정보 조회
         String brandName = brandService.get(product.getBrandId()).getName();
 
+        // 오늘 기준 랭킹 조회 (없으면 null)
+        Rank rank = rankingService.getRankInfo(LocalDate.now(ZoneId.of("Asia/Seoul")), productId);
+
         // 사용자 활동로그(상품 조회)
         productActivityPublisher.productDetail(new ProductActivityPayload.ProductDetailViewed(loginId, productId));
         //상품 조회 수 집계 이벤트 발행
@@ -56,15 +64,29 @@ public class ProductApplicationService implements ProductUsecase {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "product:detail", key = "#productId", unless = "#result == null")
-    public ProductInfo.Detail getProductDetailWithCacheable(Long productId) {
-        // 상품정보 조회
+    @Cacheable(
+            value = "product:detail",
+            key = "#productId + ':' + T(java.time.LocalDate).now(T(java.time.ZoneId).of('Asia/Seoul')).toString()",
+            unless = "#result == null"
+    )
+    public ProductInfo.Detail getProductDetailWithCacheable(String loginId, Long productId) {
+        // 상품정보
         Product product = productService.getProduct(productId);
-        // 상품 옵션별 재고 조회
+        // 옵션/재고
         List<ProductSku> skus = productSkuService.getByProductId(productId);
-        // 브랜드 정보 조회
+        // 브랜드명
         String brandName = brandService.get(product.getBrandId()).getName();
-        return ProductInfo.Detail.fromProduct(product, brandName, skus);
+
+        // 오늘 기준 랭킹 조회 (없으면 null)
+        Rank rank = rankingService.getRankInfo(LocalDate.now(ZoneId.of("Asia/Seoul")), productId);
+
+        // 사용자 활동로그(상품 조회)
+        productActivityPublisher.productDetail(new ProductActivityPayload.ProductDetailViewed(loginId, productId));
+        //상품 조회 수 집계 이벤트 발행
+        productEventPublisher.productDetail(new ProductEvent.ProductDetailViewed(loginId, productId));
+
+        // 랭킹 포함 DTO로 반환
+        return ProductInfo.Detail.fromProductWithRank(product, brandName, skus, rank);
     }
 
     @Transactional
