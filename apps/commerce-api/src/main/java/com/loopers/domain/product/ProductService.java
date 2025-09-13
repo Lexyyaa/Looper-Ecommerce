@@ -24,6 +24,18 @@ public class ProductService {
         return product;
     }
 
+    @Transactional(readOnly = true)
+    public List<Product> getProducts(List<Long> productIds) {
+        if (productIds == null || productIds.isEmpty())
+            return List.of();
+
+        List<Product> products = productRepository.findAllByIds(productIds);
+
+        return products.stream()
+                .filter(Product::isAvailable)
+                .toList();
+    }
+
     @Transactional
     public void updateStatus(boolean isAllSoldOut, Long productId) {
         if (!isAllSoldOut) return;

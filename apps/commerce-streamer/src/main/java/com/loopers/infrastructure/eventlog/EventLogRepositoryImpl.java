@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 @Slf4j
@@ -16,5 +18,10 @@ public class EventLogRepositoryImpl implements EventLogRepository {
     @Override
     public EventLog save(EventLog eventLog) {
         return eventLogJpaRepository.save(eventLog);
+    }
+
+    @Override
+    public List<EventLog> saveAll(List<EventLog> logs) {
+        return eventLogJpaRepository.saveAll(logs);
     }
 }

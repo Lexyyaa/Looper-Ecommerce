@@ -22,6 +22,11 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    public List<Product> findAllByIds(List<Long> ids) {
+        return productJpaRepository.findAllById(ids);
+    }
+
+    @Override
     public Optional<ProductSku> findBySkuId(Long skuId) {
         return productSkuJpaRepository.findById(skuId);
     }

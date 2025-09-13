@@ -1,5 +1,7 @@
 package com.loopers.domain.product;
 
+import com.loopers.domain.rank.Rank;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,7 +35,9 @@ public class ProductInfo {
             String brandName,
             Long minPrice,
             Long likeCount,
-            List<Sku> skus
+            List<Sku> skus,
+            Long rank,
+            Double score
     ) {
         public static Detail from(Product product, String brandName, List<ProductSku> skus, Long minPrice, Long likeCount) {
             return new Detail(
@@ -44,11 +48,14 @@ public class ProductInfo {
                     brandName,
                     minPrice,
                     likeCount,
-                    skus.stream().map(Sku::from).toList()
+                    skus.stream().map(Sku::from).toList(),
+                    null, // rank
+                    null  // score
             );
         }
 
-        public static Detail fromProduct(Product product,String brandName, List<ProductSku> skus) {
+        public static Detail fromProductWithRank(Product product, String brandName, List<ProductSku> skus, Rank rank) {
+
             return new Detail(
                     product.getId(),
                     product.getName(),
@@ -57,7 +64,9 @@ public class ProductInfo {
                     brandName,
                     product.getMinPrice(),
                     product.getLikeCnt(),
-                    skus.stream().map(Sku::from).toList()
+                    skus.stream().map(Sku::from).toList(),
+                    rank.getPosition(),
+                    rank.getScore()
             );
         }
     }

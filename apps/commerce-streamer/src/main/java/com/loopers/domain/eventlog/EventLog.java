@@ -33,4 +33,26 @@ public class EventLog {
     private String headersJson;
 
     private Instant receivedAt;
+
+    public static EventLog create(String eventId,
+                                  String eventType,
+                                  String eventVersion,
+                                  String occurredAtIso,
+                                  String actorId,
+                                  String payloadJson,
+                                  String headersJson) {
+        Instant occurred = (occurredAtIso == null || occurredAtIso.isBlank())
+                ? Instant.now()
+                : Instant.parse(occurredAtIso);
+        return EventLog.builder()
+                .eventId(eventId)
+                .eventType(eventType)
+                .eventVersion(eventVersion)
+                .occurredAt(occurred)
+                .actorId(actorId)
+                .payloadJson(payloadJson)
+                .headersJson(headersJson)
+                .receivedAt(Instant.now())
+                .build();
+    }
 }

@@ -7,6 +7,8 @@ public interface ProductRepository {
 
     Optional<Product> findBy(Long productId);
 
+    List<Product> findAllByIds(List<Long> ids);
+
     Optional<ProductSku> findBySkuId(Long skuId);
 
     List<ProductSku> findAllByProductId(Long productId);

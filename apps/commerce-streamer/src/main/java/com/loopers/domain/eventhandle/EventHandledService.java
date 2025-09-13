@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +23,10 @@ public class EventHandledService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public boolean shouldProcess(String handler, String eventId) {
+        return eventId != null && !eventId.isBlank() && !isExistEvent(handler, eventId);
+    }
 
     public boolean save(String handler, String eventId) {
         EventHandled eventHandled = EventHandled.builder().
@@ -32,4 +38,27 @@ public class EventHandledService {
         eventHandledRepository.save(eventHandled);
         return true;
     }
+
+    @Transactional
+    public void saveAll(String handler, List<String> eventIds) {
+        if (eventIds == null || eventIds.isEmpty())
+            return;
+
+        Instant now = Instant.now();
+        List<EventHandled> batch = new ArrayList<>(eventIds.size());
+
+        for (String id : eventIds) {
+            if (id == null || id.isBlank())
+                continue;
+            batch.add(EventHandled.builder()
+                    .eventId(id)
+                    .handler(handler)
+                    .handledAt(now)
+                    .build());
+        }
+        if (!batch.isEmpty()) {
+            eventHandledRepository.saveAll(batch);
+        }
+    }
+
 }

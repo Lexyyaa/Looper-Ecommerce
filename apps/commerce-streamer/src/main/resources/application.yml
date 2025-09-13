@@ -64,10 +64,17 @@ pg:
 kafka:
   topic:
     activity-events: activity-events
-    catalog-events:  catalog-events
-    sku-events: sku-events
+    catalog-like-events:  catalog-like-events
+    catalog-view-events:  catalog-view-events
+    catalog-product-events: catalog-product-events
     consumer-dlq: consumer-dlq
     producer-dlq: producer-dlq
+
+ranking:
+  key-prefix: rank:daily
+  top-k: 10
+  daily-ttl-days: 1
+  carry-over-alpha: 0.10
 
 ---
 spring:
@@ -78,9 +85,20 @@ spring:
 kafka:
   topic:
     activity-events: activity-events
-    catalog-events:  catalog-events
-    sku-events:    sku-events
-    consumer-dlq:    consumer-dlq
+    catalog-like-events:  catalog-like-events
+    catalog-view-events:  catalog-view-events
+    catalog-product-events: catalog-product-events
+    consumer-dlq: consumer-dlq
+    producer-dlq: producer-dlq
+
+ranking:
+  key-prefix: rank:daily
+  top-k: 2000
+  daily-ttl-days: 8
+  carry-over-alpha: 0.15
+  viewWeight: 0.1
+  likeWeight: 0.2
+  salesWeight: 0.7
 
 ---
 spring:

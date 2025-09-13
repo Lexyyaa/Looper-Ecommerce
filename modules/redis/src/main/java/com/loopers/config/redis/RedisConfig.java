@@ -23,6 +23,7 @@ import org.springframework.data.redis.connection.RedisStaticMasterReplicaConfigu
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -39,6 +40,8 @@ public class RedisConfig {
 
     public static final String CONNECTION_MASTER = "redisConnectionMaster";
     public static final String REDIS_TEMPLATE_MASTER = "redisTemplateMaster";
+    public static final String STRING_TEMPLATE = "stringRedisTemplate";
+    public static final String STRING_TEMPLATE_MASTER = "stringRedisTemplateMaster";
 
     private boolean isCacheEnabled = true;
 
@@ -55,6 +58,24 @@ public class RedisConfig {
                 JsonTypeInfo.As.PROPERTY
         );
         return om;
+    }
+
+    @Bean(name = STRING_TEMPLATE)
+    public StringRedisTemplate stringRedisTemplate(LettuceConnectionFactory defaultRedisConnectionFactory) {
+        StringRedisTemplate t = new StringRedisTemplate();
+        t.setConnectionFactory(defaultRedisConnectionFactory);
+        t.afterPropertiesSet();
+        return t;
+    }
+
+    @Bean(name = STRING_TEMPLATE_MASTER)
+    public StringRedisTemplate stringRedisTemplateMaster(
+            @Qualifier(CONNECTION_MASTER) LettuceConnectionFactory masterConnectionFactory
+    ) {
+        StringRedisTemplate t = new StringRedisTemplate();
+        t.setConnectionFactory(masterConnectionFactory);
+        t.afterPropertiesSet();
+        return t;
     }
 
     @Bean

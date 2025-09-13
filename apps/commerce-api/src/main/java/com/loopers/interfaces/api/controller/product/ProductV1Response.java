@@ -45,7 +45,9 @@ public class ProductV1Response {
             String brandName,
             Long minPrice,
             Long likeCount,
-            List<Sku> skus
+            List<Sku> skus,
+            Long ranking,
+            Double rankingScore
     ) {
         public static Detail from(ProductInfo.Detail info) {
             return new Detail(
@@ -56,7 +58,9 @@ public class ProductV1Response {
                     info.brandName(),
                     info.minPrice(),
                     info.likeCount(),
-                    info.skus().stream().map(Sku::from).toList()
+                    info.skus().stream().map(Sku::from).toList(),
+                    info.rank(),
+                    info.score()
             );
         }
     }
