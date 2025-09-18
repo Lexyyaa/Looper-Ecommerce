@@ -1,13 +1,16 @@
 package com.loopers.infrastructure.product;
 
 import com.loopers.domain.product.ProductSkuMetrics;
+import com.loopers.domain.product.ProductSkuMetricsId;
 import com.loopers.domain.product.ProductSkuMetricsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
-import java.time.Instant;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor
@@ -16,13 +19,23 @@ public class ProductSkuMetricsRepositoryImpl implements ProductSkuMetricsReposit
 
     private final ProductSkuMetricsJpaRepository productSkuMetricsJpaRepository;
 
-    @Override
-    public ProductSkuMetrics save(ProductSkuMetrics productSkuMetrics) {
-        return productSkuMetricsJpaRepository.save(productSkuMetrics);
+
+    private final ProductSkuMetricsJpaRepository jpa;
+
+    @Override public Optional<ProductSkuMetrics> findById(ProductSkuMetricsId id) {
+        return productSkuMetricsJpaRepository.findById(id);
+    }
+
+    @Override public Optional<ProductSkuMetrics> findByPkForUpdateWithLock(Long productSkuId, LocalDate date) {
+        return productSkuMetricsJpaRepository.findByPkForUpdate(productSkuId, date);
+    }
+
+    @Override public ProductSkuMetrics save(ProductSkuMetrics entity) {
+        return productSkuMetricsJpaRepository.save(entity);
     }
 
     @Override
-    public void upsertAddSales(Long productId, Long skuId, Long delta, Instant now) {
-        productSkuMetricsJpaRepository.upsertAddSales(productId, skuId, delta, now);
+    public List<ProductSkuMetricsJpaRepository.SalesSum> sumSalesByProductIdsAndDate(Set<Long> productIds, LocalDate date) {
+        return productSkuMetricsJpaRepository.sumSalesByProductIdsAndDate(productIds,date);
     }
 }
