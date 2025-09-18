@@ -4,5 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(value = "ranking")
 public record RankingProperties(
-        String keyPrefix
+        String keyPrefix,
+        String weeklyPrefix,
+        String monthlyPrefix
 ){}

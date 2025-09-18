@@ -19,7 +19,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class RankingService {
 
-    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.BASIC_ISO_DATE;
+    private static final DateTimeFormatter YMD = DateTimeFormatter.BASIC_ISO_DATE;
 
     private final @Qualifier(RedisConfig.STRING_TEMPLATE_MASTER)
     StringRedisTemplate stringRedisTemplate;
@@ -27,38 +27,35 @@ public class RankingService {
     private final RankingProperties props;
     private final MetricsService metricsService;
 
-    public void computeAndPutScoresToday(Set<Long> productIds) {
-        computeAndPutScores(LocalDate.now(ZoneId.of("Asia/Seoul")), productIds);
-    }
-
     public void computeAndPutScores(LocalDate date, Set<Long> productIds) {
         if (productIds == null || productIds.isEmpty()) return;
 
-        String key = props.keyPrefix() + ":" + date.format(dateTimeFormatter);
+        String key = props.keyPrefix() + ":" + date.format(YMD);
         BoundZSetOperations<String, String> zops = stringRedisTemplate.boundZSetOps(key);
 
-        Map<Long, ProductMetrics> productMetrics = metricsService.getProductMetrics(productIds);
-        Map<Long, Long> salesByProductIds = metricsService.getSalesSumByProductIds(productIds);
+        Map<Long, ProductMetrics> pmById = metricsService.getProductMetrics(productIds, date);
+
+        Map<Long, Long> salesByProductIds = metricsService.getSalesSumByProductIds(productIds, date);
 
         double vw = props.viewWeight();
         double lw = props.likeWeight();
         double sw = props.salesWeight();
 
-        Set<ZSetOperations.TypedTuple<String>>  tuples = new LinkedHashSet<>(productIds.size());
+        Set<ZSetOperations.TypedTuple<String>> tuples = new LinkedHashSet<>(productIds.size());
         for (Long id : productIds) {
-            long viewCnt = productMetrics.get(id).getViewCnt();
-            long likeCnt = productMetrics.get(id).getLikeCnt();
-            long salesSum = salesByProductIds.getOrDefault(id, 0L);
+            ProductMetrics pm = pmById.get(id);
+            long viewDelta = (pm == null ? 0L : pm.getViewCntDelta());
+            long likeDelta = (pm == null ? 0L : pm.getLikeCntDelta());
+            long salesDelta = salesByProductIds.getOrDefault(id, 0L);
 
-            double score = viewCnt * vw + likeCnt * lw + salesSum * sw;
-
+            double score = viewDelta * vw + likeDelta * lw + salesDelta * sw;
             tuples.add(new DefaultTypedTuple<>(String.valueOf(id), score));
         }
 
-        if (tuples.isEmpty())
-            return;
+        if (tuples.isEmpty()) return;
 
         zops.add(tuples);
         zops.expire(Duration.ofDays(props.dailyTtlDays()));
     }
 }
+
