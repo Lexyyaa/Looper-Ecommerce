@@ -34,6 +34,16 @@ management:
   server:
     port: 8094
 
+ranking:
+  weekly-prefix: rank:weekly
+  monthly-prefix: rank:monthly
+  weekly-ttl-days: 14
+  monthly-ttl-days: 60
+  weight:
+    view: 0.1
+    like: 0.2
+    sales: 0.7
+  carry-over-alpha: 0.1
 ---
 spring:
   config:
