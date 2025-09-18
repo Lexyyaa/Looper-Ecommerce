@@ -52,7 +52,7 @@ public class ProductApplicationService implements ProductUsecase {
         String brandName = brandService.get(product.getBrandId()).getName();
 
         // 오늘 기준 랭킹 조회 (없으면 null)
-        Rank rank = rankingService.getRankInfo(LocalDate.now(ZoneId.of("Asia/Seoul")), productId);
+        Rank rank = rankingService.getRankInfo(LocalDate.now(ZoneId.of("Asia/Seoul")), productId,"daily");
 
         // 사용자 활동로그(상품 조회)
         productActivityPublisher.productDetail(new ProductActivityPayload.ProductDetailViewed(loginId, productId));
@@ -78,7 +78,7 @@ public class ProductApplicationService implements ProductUsecase {
         String brandName = brandService.get(product.getBrandId()).getName();
 
         // 오늘 기준 랭킹 조회 (없으면 null)
-        Rank rank = rankingService.getRankInfo(LocalDate.now(ZoneId.of("Asia/Seoul")), productId);
+        Rank rank = rankingService.getRankInfo(LocalDate.now(ZoneId.of("Asia/Seoul")), productId,"daily");
 
         // 사용자 활동로그(상품 조회)
         productActivityPublisher.productDetail(new ProductActivityPayload.ProductDetailViewed(loginId, productId));
