@@ -20,7 +20,7 @@ public class ProductSkuProducer {
     private final KafkaTemplate<Object, Object> kafkaTemplate;
     private final RetryTemplate retryTemplate;
 
-    @Value("${kafka.topic.sku-events}")
+    @Value("${kafka.topic.catalog-product-events}")
     private String topic;
 
     @Value("${kafka.topic.producer-dlq}")

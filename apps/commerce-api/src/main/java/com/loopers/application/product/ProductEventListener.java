@@ -3,7 +3,7 @@ package com.loopers.application.product;
 import com.loopers.domain.order.OrderEvent;
 import com.loopers.domain.payment.PaymentEvent;
 import com.loopers.domain.product.*;
-import com.loopers.infrastructure.message.ProductProducer;
+import com.loopers.infrastructure.message.ProductViewProducer;
 import com.loopers.shared.event.Envelope;
 import com.loopers.infrastructure.message.ProductSkuProducer;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class ProductEventListener {
 
     private final ProductSkuService productSkuService;
     private final ProductService productService;
-    private final ProductProducer productProducer;
+    private final ProductViewProducer productViewProducer;
     private final ProductSkuProducer productSkuProducer;
     private final CacheManager cacheManager;
 
@@ -68,6 +68,6 @@ public class ProductEventListener {
     @Async("applicationEventTaskExecutor")
     @EventListener
     public void onDetailViewed(Envelope<ProductActivityPayload.ProductDetailViewed> event) {
-        productProducer.send(String.valueOf(event.payload().productId()),event);
+        productViewProducer.send(String.valueOf(event.payload().productId()),event);
     }
 }

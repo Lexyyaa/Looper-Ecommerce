@@ -5,7 +5,6 @@ import com.loopers.domain.rank.RankCommand;
 import com.loopers.domain.rank.RankInfo;
 import com.loopers.interfaces.api.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,10 +23,11 @@ public class RankController implements RankV1ApiSpec{
     @Override
     @GetMapping
     public ApiResponse<RankV1Response.ProductRankList> rank(
-            @RequestParam @DateTimeFormat(pattern = "yyyyMMdd") LocalDate date,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam String date,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "daily") String period
     ) {
-        List<RankInfo.ProductRank> infos = rankUsecase.getProductRanking(RankCommand.ProductRanking.create(date,size));
+        List<RankInfo.ProductRank> infos = rankUsecase.getProductRanking(RankCommand.ProductRanking.create(date,size,period));
         return ApiResponse.success(RankV1Response.ProductRankList.from(infos));
     }
 }

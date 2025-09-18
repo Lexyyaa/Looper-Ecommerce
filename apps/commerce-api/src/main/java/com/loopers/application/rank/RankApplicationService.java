@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -26,10 +27,11 @@ public class RankApplicationService implements RankUsecase {
     @Override
     @Transactional(readOnly = true)
     public List<RankInfo.ProductRank> getProductRanking(RankCommand.ProductRanking command) {
-        LocalDate date = LocalDate.parse(command.date());
+        LocalDate date = LocalDate.parse(command.date(), DateTimeFormatter.BASIC_ISO_DATE);
         int size = command.size();
+        String period = command.period() == null ? "daily" : command.period().toLowerCase();
 
-        List<Rank> rankList = rankingService.getProductRank(date, size);
+        List<Rank> rankList = rankingService.getProductRank(date, size, period);
 
         if (rankList.isEmpty())
             return List.of();

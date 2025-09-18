@@ -13,12 +13,12 @@ import java.nio.charset.StandardCharsets;
 
 @Component
 @RequiredArgsConstructor
-public class ProductProducer {
+public class ProductViewProducer {
 
     private final KafkaTemplate<Object, Object> kafkaTemplate;
     private final RetryTemplate retryTemplate;
 
-    @Value("${kafka.topic.catalog-events}")
+    @Value("${kafka.topic.catalog-view-events}")
     private String topic;
 
     @Value("${kafka.topic.producer-dlq}")

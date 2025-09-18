@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 @Service
@@ -24,90 +26,101 @@ public class CatalogApplicationService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public void onViewBatch(List<ConsumerRecord<Object, Object>> records) throws Exception {
-        Map<Long, Long> viewMap = new HashMap<>();
+        if (records == null || records.isEmpty())
+            return;
+
+        Map<LocalDate, Map<Long, Long>> viewByDate = new LinkedHashMap<>();
         List<String> handledIds = new ArrayList<>();
 
-        for (ConsumerRecord<Object, Object> r : records) {
-            String eventId = io.header(r, "event_id");
+        for (ConsumerRecord<Object, Object> record : records) {
+            String eventId = io.header(record, "event_id");
+            if (!handledService.shouldProcess("catalog-view", eventId)) continue;
 
-            if (!handledService.shouldProcess("activity-log", eventId))
-                continue;
+            long productId = io.payload(record).path("productId").asLong();
+            if (productId <= 0) continue;
 
-            JsonNode body = objectMapper.readTree(io.payloadString(r)).path("payload");
-            long productId = body.path("productId").asLong();
+            LocalDate date = io.occurredDate(record);
 
-            viewMap.merge(productId, 1L, Long::sum);
+            viewByDate.computeIfAbsent(date, d -> new HashMap<>())
+                    .merge(productId, 1L, Long::sum);
+
             handledIds.add(eventId);
         }
 
-        if (viewMap.isEmpty())
+        if (viewByDate.isEmpty())
             return;
 
-        metricsService.incProductViews(viewMap);
+        for (Map.Entry<LocalDate, Map<Long, Long>> entry : viewByDate.entrySet()) {
+            LocalDate date = entry.getKey();
+            Map<Long, Long> viewMap = entry.getValue();
 
-        Set<Long> productIds = new LinkedHashSet<>(viewMap.keySet());
-        rankingService.computeAndPutScoresToday(productIds);
+            metricsService.incProductViews(viewMap, date);
+            rankingService.computeAndPutScores(date, viewMap.keySet());
+        }
 
         handledService.saveAll("catalog-view", handledIds);
     }
 
     public void onLikeBatch(List<ConsumerRecord<Object, Object>> records) throws Exception {
-        Map<Long, Long> latestLike = new LinkedHashMap<>();
+        if (records == null || records.isEmpty()) return;
+
+        Map<LocalDate, Set<Long>> touchedByDate = new LinkedHashMap<>();
         List<String> handledIds = new ArrayList<>();
 
         for (ConsumerRecord<Object, Object> r : records) {
             String eventId = io.header(r, "event_id");
             if (!handledService.shouldProcess("catalog-like", eventId)) continue;
 
-            JsonNode body = objectMapper.readTree(io.payloadString(r)).path("payload");
-            long productId = body.path("productId").asLong();
-            long likeCount = body.path("likeCount").asLong();
+            String eventType = io.header(r, "event_type");
+            LocalDate date = io.occurredDate(r);
 
-            latestLike.put(productId, likeCount);
+            long productId = io.payload(r).path("targetId").asLong();
+            if (productId <= 0) continue;
+
+            JsonNode payload = objectMapper.createObjectNode().put("productId", productId);
+            JsonNode envelope = objectMapper.createObjectNode().set("payload", payload);
+
+            metricsService.onLikeChanged(envelope.toString(), eventType, date);
+
+            touchedByDate.computeIfAbsent(date, d -> new LinkedHashSet<>()).add(productId);
             handledIds.add(eventId);
         }
 
-        if (latestLike.isEmpty()) return;
-
-        for (Map.Entry<Long, Long> e : latestLike.entrySet()) {
-            JsonNode payload  = objectMapper.createObjectNode()
-                    .put("productId", e.getKey())
-                    .put("likeCount", e.getValue());
-            JsonNode envelope = objectMapper.createObjectNode().set("payload", payload);
-            metricsService.onLikeChanged(envelope.toString());
+        for (Map.Entry<LocalDate, Set<Long>> e : touchedByDate.entrySet()) {
+            rankingService.computeAndPutScores(e.getKey(), e.getValue());
         }
-
-        rankingService.computeAndPutScoresToday(latestLike.keySet());
 
         handledService.saveAll("catalog-like", handledIds);
     }
 
     public void onProductBatch(List<ConsumerRecord<Object, Object>> records) throws Exception {
-        List<JsonNode> toApply = new ArrayList<>();
-        Set<Long> productIds = new LinkedHashSet<>();
+        if (records == null || records.isEmpty()) return;
+
+        Map<LocalDate, Set<Long>> touchedByDate = new LinkedHashMap<>();
         List<String> handledIds = new ArrayList<>();
 
         for (ConsumerRecord<Object, Object> r : records) {
             String eventId = io.header(r, "event_id");
             if (!handledService.shouldProcess("catalog-product", eventId)) continue;
 
-            JsonNode body = objectMapper.readTree(io.payloadString(r)).path("payload");
-
+            JsonNode body = io.payload(r);
             long productId = body.path("productId").asLong();
-            productIds.add(productId);
+            long productSkuId = body.path("productSkuId").asLong();
+            long amount = body.path("amount").asLong();
+            if (productId <= 0 || productSkuId <= 0 || amount <= 0) continue;
 
-            toApply.add(body);
+            LocalDate date = io.occurredDate(r);
+
+            JsonNode envelope = objectMapper.createObjectNode().set("payload", body);
+            metricsService.onStockConfirmed(envelope.toString(), date);
+
+            touchedByDate.computeIfAbsent(date, d -> new LinkedHashSet<>()).add(productId);
             handledIds.add(eventId);
         }
 
-        if (toApply.isEmpty()) return;
-
-        for (JsonNode payload : toApply) {
-            JsonNode envelope = objectMapper.createObjectNode().set("payload", payload);
-            metricsService.onStockConfirmed(envelope.toString());
+        for (Map.Entry<LocalDate, Set<Long>> e : touchedByDate.entrySet()) {
+            rankingService.computeAndPutScores(e.getKey(), e.getValue());
         }
-
-        rankingService.computeAndPutScoresToday(productIds);
 
         handledService.saveAll("catalog-product", handledIds);
     }

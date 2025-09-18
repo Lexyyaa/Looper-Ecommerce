@@ -24,48 +24,49 @@ public class RankingService {
 
     private final RankingProperties props;
 
-    public List<Rank> getProductRank(LocalDate date, int size) {
+    public List<Rank> getProductRank(LocalDate date, int size, String period) {
         if (size <= 0) return List.of();
 
-        final String key = props.keyPrefix() + ":" + date.format(dateTimeFormatter);
+        String key = Rank.buildKey(period, date,
+                props.keyPrefix(),
+                props.weeklyPrefix(),
+                props.monthlyPrefix()
+        );
 
         Set<ZSetOperations.TypedTuple<String>> tuples =
                 stringRedisTemplate.opsForZSet().reverseRangeWithScores(key, 0, Math.max(0, size - 1));
 
-        if (tuples == null || tuples.isEmpty())
-            return List.of();
+        if (tuples == null || tuples.isEmpty()) return List.of();
 
         List<Rank> result = new ArrayList<>(tuples.size());
         int position = 1;
         for (ZSetOperations.TypedTuple<String> t : tuples) {
-
             String productIdStr = t.getValue();
             Double score = t.getScore();
-            if (productIdStr == null)
-                continue;
+            if (productIdStr == null) continue;
 
             long productId = Long.parseLong(productIdStr);
-
-            result.add(new Rank(productId, (long) position++, score == null ? 0d : score));
+            result.add(Rank.create(productId, (long) position++, score == null ? 0d : score));
         }
         return result;
     }
 
-    public Rank getRankInfo(LocalDate date, Long productId) {
+    public Rank getRankInfo(LocalDate date, Long productId, String period) {
         if (productId == null) return null;
 
-        final String key = props.keyPrefix() + ":" + date.format(dateTimeFormatter);
+        String key = Rank.buildKey(period, date,
+                props.keyPrefix(),
+                props.weeklyPrefix(),
+                props.monthlyPrefix()
+        );
         final String member = productId.toString();
 
         Long zeroBased = stringRedisTemplate.opsForZSet().reverseRank(key, member);
-
-        if (zeroBased == null)
-            return null;
+        if (zeroBased == null) return null;
 
         Double score = stringRedisTemplate.opsForZSet().score(key, member);
-
         int position = Math.toIntExact(zeroBased) + 1;
 
-        return new Rank(productId, (long) position, score == null ? 0d : score);
+        return Rank.create(productId, (long) position, score == null ? 0d : score);
     }
 }

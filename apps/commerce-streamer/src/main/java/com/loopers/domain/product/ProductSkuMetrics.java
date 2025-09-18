@@ -1,17 +1,16 @@
 package com.loopers.domain.product;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "product_sku_metrics",
         indexes = {
-                @Index(name = "idx_product_sku_metrics_updated_at", columnList = "updatedAt")
+                @Index(name = "idx_product_sku_metrics_updated_at", columnList = "updated_at"),
+                @Index(name = "idx_product_sku_metrics_product_id_date", columnList = "product_id,date")
         })
 @Getter
 @Setter
@@ -20,14 +19,31 @@ import java.time.Instant;
 @Builder
 public class ProductSkuMetrics {
 
-    @Id
-    private Long productSkuId;
+    @EmbeddedId
+    private ProductSkuMetricsId id;  // (skuId, date)
 
+    @Column(name = "product_id", nullable = false)
     private Long productId;
 
-    private long salesCnt;
+    @Column(name = "sales_cnt_delta", nullable = false)
+    private long salesCntDelta;
 
+    @Column(name = "updated_at", nullable=false)
     private Instant updatedAt;
 
-}
+    public void addSalesDelta(long delta){
+        if (delta > 0) {
+            this.salesCntDelta += delta;
+            this.updatedAt = Instant.now();
+        }
+    }
 
+    public static ProductSkuMetrics newDailyRow(Long productId, Long productSkuId, LocalDate date) {
+        return ProductSkuMetrics.builder()
+                .id(ProductSkuMetricsId.of(productSkuId, date))
+                .productId(productId)
+                .salesCntDelta(0L)
+                .updatedAt(Instant.now())
+                .build();
+    }
+}

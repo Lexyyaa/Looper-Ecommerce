@@ -46,7 +46,8 @@ kafka:
 
 ranking:
   key-prefix: rank:daily
-  top-k: 10
+  weekly-prefix: rank:weekly
+  monthly-prefix: rank:monthly
   daily-ttl-days: 1
   carry-over-alpha: 0.10
 
@@ -90,9 +91,11 @@ pg:
 kafka:
   topic:
     activity-events: activity-events
-    catalog-events:  catalog-events
-    sku-events:    sku-events
-    producer-dlq:    producer-dlq
+    catalog-like-events:  catalog-like-events
+    catalog-view-events:  catalog-view-events
+    catalog-product-events: catalog-product-events
+    consumer-dlq: consumer-dlq
+    producer-dlq: producer-dlq
 
 ---
 spring:
