@@ -4,7 +4,7 @@ import com.loopers.domain.like.LikeEvent;
 import com.loopers.domain.like.LikeService;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductService;
-import com.loopers.infrastructure.message.ProductProducer;
+import com.loopers.infrastructure.message.ProductLikeProducer;
 import com.loopers.domain.product.CatalogMessage;
 import com.loopers.shared.event.Envelope;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class LikeEventListener {
     private final LikeService likeService;
     private final ProductService productService;
-    private final ProductProducer productProducer;
+    private final ProductLikeProducer productLikeProducer;
 
     @Async("applicationEventTaskExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -28,15 +28,14 @@ public class LikeEventListener {
 
         productService.updateLikeCnt(product, likeCnt);
 
-        Envelope<CatalogMessage.LikeChanged> record = Envelope.of(
+        Envelope<CatalogMessage.LikeAdded> record = Envelope.of(
                 e.actorId(),
-                new CatalogMessage.LikeChanged(
-                        product.getId(),
-                        e.payload().targetType().name(),
-                        likeCnt
+                new CatalogMessage.LikeAdded(
+                        e.actorId(),
+                        product.getId()
                 )
         );
-        productProducer.send(String.valueOf(product.getId()),record);
+        productLikeProducer.send(String.valueOf(product.getId()),record);
     }
 
     @Async("applicationEventTaskExecutor")
@@ -46,14 +45,13 @@ public class LikeEventListener {
         Product product = productService.getProduct(e.payload().targetId());
         productService.updateLikeCnt(product, likeCnt);
 
-        Envelope<CatalogMessage.LikeChanged> record = Envelope.of(
+        Envelope<CatalogMessage.LikeRemoved> record = Envelope.of(
                 e.actorId(),
-                new CatalogMessage.LikeChanged(
-                        product.getId(),
-                        e.payload().targetType().name(),
-                        likeCnt
+                new CatalogMessage.LikeRemoved(
+                        e.actorId(),
+                        product.getId()
                 )
         );
-        productProducer.send(String.valueOf(product.getId()),record);
+        productLikeProducer.send(String.valueOf(product.getId()),record);
     }
 }

@@ -1,6 +1,5 @@
 package com.loopers.infrastructure.message;
 
-
 import com.loopers.shared.event.Envelope;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -12,21 +11,20 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 
-
 @Component
 @RequiredArgsConstructor
-public class ProductSkuProducer {
+public class ProductLikeProducer {
 
     private final KafkaTemplate<Object, Object> kafkaTemplate;
     private final RetryTemplate retryTemplate;
 
-    @Value("${kafka.topic.catalog-product-events}")
+    @Value("${kafka.topic.catalog-like-events}")
     private String topic;
 
     @Value("${kafka.topic.producer-dlq}")
     private String dlq;
 
-    public <T> void send(String key, Envelope<T> envelope) {
+    public <T> void send(String key, Envelope<T> envelope)  {
         String eventType = envelope.payload().getClass().getSimpleName();
 
         ProducerRecord<Object, Object> record = new ProducerRecord<>(topic, key, envelope);
